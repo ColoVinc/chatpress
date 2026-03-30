@@ -16,7 +16,7 @@
         </div>
         <div class="chatpress-stat-card">
             <span class="chatpress-stat-number"><?php echo intval( $stats['total_errors'] ); ?></span>
-            <span class="chapress-stat-label">Errori</span>
+            <span class="chatpress-stat-label">Errori</span>
         </div>
     </div>
 
