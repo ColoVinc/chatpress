@@ -1,52 +1,54 @@
 jQuery(function ($) {
 
-    const $widget   = $('#chatpress-chat-widget');
-    const $toggle   = $('#chatpress-chat-toggle');
-    const $window   = $('#chatpress-chat-window');
-    const $messages = $('#chatpress-chat-messages');
-    const $input    = $('#chatpress-chat-input');
-    const $send     = $('#chatpress-chat-send');
+    const $toggle   = $('#sitegenie-chat-toggle');
+    const $window   = $('#sitegenie-chat-window');
+    const $messages = $('#sitegenie-chat-messages');
+    const $input    = $('#sitegenie-chat-input');
+    const $send     = $('#sitegenie-chat-send');
+    const $main     = $('#sitegenie-chat-main');
+    const $histPanel = $('#sitegenie-history-panel');
+    const $histList  = $('#sitegenie-history-list');
 
-    const STORAGE_KEY_HISTORY  = 'chatpress_history';
-    const STORAGE_KEY_MESSAGES = 'chatpress_messages';
-    const STORAGE_KEY_SESSION  = 'chatpress_session';
+    const STORAGE_KEY_MESSAGES = 'sitegenie_messages';
+    const STORAGE_KEY_SESSION  = 'sitegenie_session';
+    const STORAGE_KEY_CONV_ID  = 'sitegenie_conv_id';
 
-    // Storico conversazione
-    let conversationHistory = [];
+    let currentConversationId = 0;
 
-    // Se la sessione WP è cambiata (logout/login), pulisci tutto
+    // Session check
     var savedSession = sessionStorage.getItem(STORAGE_KEY_SESSION);
-    if (savedSession && savedSession !== chatpress_chat.session_id) {
-        sessionStorage.removeItem(STORAGE_KEY_HISTORY);
+    if (savedSession && savedSession !== sitegenie_chat.session_id) {
         sessionStorage.removeItem(STORAGE_KEY_MESSAGES);
+        sessionStorage.removeItem(STORAGE_KEY_CONV_ID);
     }
-    sessionStorage.setItem(STORAGE_KEY_SESSION, chatpress_chat.session_id);
+    sessionStorage.setItem(STORAGE_KEY_SESSION, sitegenie_chat.session_id);
 
-    // Mappa tool → etichetta leggibile per il badge
     const toolLabels = {
-        create_post:    '✅ Post creato',
-        update_post:    '✏️ Post aggiornato',
-        delete_post:    '🗑️ Post eliminato',
-        get_posts:      '📋 Post recuperati',
-        get_media:      '🖼️ Media recuperati',
-        get_categories: '🗂️ Categorie recuperate',
-        get_site_info:  '🌐 Info sito recuperate',
+        create_post:            '✅ Post creato',
+        update_post:            '✏️ Post aggiornato',
+        delete_post:            '🗑️ Post eliminato',
+        get_posts:              '📋 Post recuperati',
+        get_media:              '🖼️ Media recuperati',
+        get_categories:         '🗂️ Categorie recuperate',
+        get_site_info:          '🌐 Info sito recuperate',
+        get_custom_post_types:  '📦 CPT recuperati',
+        create_custom_post:     '✅ CPT creato',
+        update_custom_post:     '✏️ CPT aggiornato',
     };
 
-    // ── Ripristina sessione precedente ────────────────────────────
     restoreSession();
 
-    // ── Toggle apertura/chiusura ──────────────────────────────────
+    // ── Toggle ────────────────────────────────────────────────────
     $toggle.on('click', function () {
         const isOpen = $window.is(':visible');
         $window.toggle(!isOpen);
-        $('.chatpress-chat-icon').toggle(isOpen);
-        $('.chatpress-chat-close').toggle(!isOpen);
+        $('.sitegenie-chat-icon').toggle(isOpen);
+        $('.sitegenie-chat-close').toggle(!isOpen);
         if (!isOpen) { $input.focus(); scrollToBottom(); }
     });
 
-    // ── Suggerimenti rapidi ───────────────────────────────────────
-    $(document).on('click', '.chatpress-suggestion', function () {
+    // ── Suggerimenti ──────────────────────────────────────────────
+    $(document).on('click', '.sitegenie-suggestion', function () {
         $input.val($(this).data('msg'));
         sendMessage();
     });
@@ -54,58 +56,144 @@ jQuery(function ($) {
     // ── Invio ─────────────────────────────────────────────────────
     $send.on('click', sendMessage);
     $input.on('keydown', function (e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
     });
 
+    // ── Nuova chat ────────────────────────────────────────────────
+    $('#sitegenie-new-chat-btn').on('click', function () {
+        currentConversationId = 0;
+        sessionStorage.removeItem(STORAGE_KEY_MESSAGES);
+        sessionStorage.removeItem(STORAGE_KEY_CONV_ID);
+        $messages.empty();
+        appendMessage('Ciao! Sono il tuo assistente AI. Come posso aiutarti oggi?', 'ai');
+        $('.sitegenie-chat-suggestions').show();
+        $histPanel.hide();
+        $main.show();
+    });
+
+    // ── Cronologia ────────────────────────────────────────────────
+    $('#sitegenie-history-btn').on('click', function () {
+        $main.hide();
+        $histPanel.show();
+        loadConversations();
+    });
+
+    $('#sitegenie-history-back').on('click', function () {
+        $histPanel.hide();
+        $main.show();
+    });
+
+    // Click su conversazione
+    $(document).on('click', '.sitegenie-conv-item', function () {
+        var convId = $(this).data('id');
+        loadConversation(convId);
+    });
+
+    // Elimina conversazione
+    $(document).on('click', '.sitegenie-conv-delete', function (e) {
+        e.stopPropagation();
+        var convId = $(this).closest('.sitegenie-conv-item').data('id');
+        if (!confirm('Eliminare questa conversazione?')) return;
+
+        $.post(sitegenie_chat.ajax_url, {
+            action: 'sitegenie_delete_conversation',
+            nonce: sitegenie_chat.nonce,
+            conversation_id: convId,
+        }).done(function () {
+            if (currentConversationId === convId) {
+                $('#sitegenie-new-chat-btn').click();
+            }
+            loadConversations();
+        });
+    });
+
+    function loadConversations() {
+        $histList.html('<div class="text-center p-3 text-muted small"><i class="fa-solid fa-spinner fa-spin"></i></div>');
+        $.post(sitegenie_chat.ajax_url, {
+            action: 'sitegenie_get_conversations',
+            nonce: sitegenie_chat.nonce,
+        }).done(function (res) {
+            if (!res.success || !res.data.length) {
+                $histList.html('<div class="text-center p-3 text-muted small">Nessuna conversazione.</div>');
+                return;
+            }
+            var html = '';
+            res.data.forEach(function (c) {
+                var active = (c.id == currentConversationId) ? ' sitegenie-conv-active' : '';
+                html += '<div class="sitegenie-conv-item' + active + '" data-id="' + c.id + '">'
+                    + '<div class="sitegenie-conv-title">' + escHtml(c.title) + '</div>'
+                    + '<div class="d-flex justify-content-between align-items-center">'
+                    + '<small class="text-muted">' + c.message_count + ' msg</small>'
+                    + '<button class="sitegenie-conv-delete btn btn-sm p-0 border-0 text-muted" title="Elimina"><i class="fa-solid fa-trash-can fa-xs"></i></button>'
+                    + '</div></div>';
+            });
+            $histList.html(html);
+        });
+    }
+
+    function loadConversation(convId) {
+        $.post(sitegenie_chat.ajax_url, {
+            action: 'sitegenie_load_conversation',
+            nonce: sitegenie_chat.nonce,
+            conversation_id: convId,
+        }).done(function (res) {
+            if (!res.success) return;
+
+            currentConversationId = convId;
+            $messages.empty();
+            $('.sitegenie-chat-suggestions').hide();
+
+            res.data.messages.forEach(function (m) {
+                appendMessage(m.content, m.role === 'user' ? 'user' : 'ai');
+            });
+
+            sessionStorage.setItem(STORAGE_KEY_CONV_ID, convId);
+            saveVisibleMessages();
+
+            $histPanel.hide();
+            $main.show();
+            scrollToBottom();
+        });
+    }
+
+    // ── Invio messaggio ───────────────────────────────────────────
     function sendMessage() {
-        const msg = $input.val().trim();
+        var msg = $input.val().trim();
         if (!msg) return;
 
-        // Nascondi suggerimenti dopo il primo messaggio
-        $('.chatpress-chat-suggestions').hide();
-
+        $('.sitegenie-chat-suggestions').hide();
         appendMessage(msg, 'user');
         $input.val('').prop('disabled', true);
         $send.prop('disabled', true);
 
-        const $loading = appendMessage('⏳ Elaborazione in corso...', 'loading');
+        var $loading = appendMessage('⏳ Elaborazione in corso...', 'loading');
 
-        $.post(chatpress_chat.ajax_url, {
-            action:  'chatpress_chat',
-            nonce:   chatpress_chat.nonce,
+        $.post(sitegenie_chat.ajax_url, {
+            action: 'sitegenie_chat',
+            nonce: sitegenie_chat.nonce,
             message: msg,
-            history: JSON.stringify(conversationHistory),
+            conversation_id: currentConversationId,
         })
         .done(function (res) {
             $loading.remove();
-
             if (res.success) {
-                const data = res.data;
+                var data = res.data;
+                currentConversationId = data.conversation_id || currentConversationId;
 
-                // Aggiorna lo storico
-                conversationHistory = data.history || [];
-
-                // Mostra il badge azione se un tool è stato eseguito
                 if (data.action_taken && data.action_taken.tool) {
-                    const label = toolLabels[data.action_taken.tool] || '⚡ Azione eseguita';
-                    const result = data.action_taken.result || {};
-
-                    let extraHtml = '';
-                    if (data.action_taken.tool === 'create_post' && result.edit_url) {
+                    var label = toolLabels[data.action_taken.tool] || '⚡ Azione eseguita';
+                    var result = data.action_taken.result || {};
+                    var extraHtml = '';
+                    if ((data.action_taken.tool === 'create_post' || data.action_taken.tool === 'create_custom_post') && result.edit_url) {
                         extraHtml = ' — <a href="' + result.edit_url + '" target="_blank">Apri nell\'editor</a>';
                     }
-
                     appendBadge(label + extraHtml);
                 }
 
                 appendMessage(data.text, 'ai');
                 saveSession();
-
             } else {
-                appendMessage('❌ ' + res.data, 'ai');
+                appendMessage('⚠️ ' + res.data, 'ai');
             }
         })
         .fail(function () {
@@ -119,17 +207,16 @@ jQuery(function ($) {
         });
     }
 
+    // ── Helpers ───────────────────────────────────────────────────
     function appendMessage(text, type) {
-        const $msg = $('<div>')
-            .addClass('chatpress-chat-message chatpress-chat-message--' + type)
-            .text(text);
+        var $msg = $('<div>').addClass('sitegenie-chat-message sitegenie-chat-message--' + type).text(text);
         $messages.append($msg);
         scrollToBottom();
         return $msg;
     }
 
     function appendBadge(html) {
-        const $badge = $('<div class="chatpress-action-badge">').html(html);
+        var $badge = $('<div class="sitegenie-action-badge">').html(html);
         $messages.append($badge);
         scrollToBottom();
     }
@@ -138,45 +225,41 @@ jQuery(function ($) {
         $messages.scrollTop($messages[0].scrollHeight);
     }
 
-    // ── Persistenza sessionStorage ────────────────────────────────
+    function escHtml(str) {
+        return $('<span>').text(str).html();
+    }
 
+    // ── Persistenza sessionStorage ────────────────────────────────
     function saveSession() {
         try {
-            sessionStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(conversationHistory));
-            // Salva solo i messaggi visibili (user + ai, no loading)
-            var msgs = [];
-            $messages.find('.chatpress-chat-message--user, .chatpress-chat-message--ai').each(function () {
-                msgs.push({ type: $(this).hasClass('chatpress-chat-message--user') ? 'user' : 'ai', text: $(this).text() });
-            });
-            $messages.find('.chatpress-action-badge').each(function () {
-                msgs.push({ type: 'badge', html: $(this).html() });
-            });
-            // Mantieni ordine DOM
-            var ordered = [];
-            $messages.children().each(function () {
-                var $el = $(this);
-                if ($el.hasClass('chatpress-chat-message--user'))     ordered.push({ type: 'user', text: $el.text() });
-                else if ($el.hasClass('chatpress-chat-message--ai'))  ordered.push({ type: 'ai', text: $el.text() });
-                else if ($el.hasClass('chatpress-action-badge'))      ordered.push({ type: 'badge', html: $el.html() });
-            });
-            sessionStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(ordered));
+            sessionStorage.setItem(STORAGE_KEY_CONV_ID, currentConversationId);
+            saveVisibleMessages();
         } catch (e) {}
+    }
+
+    function saveVisibleMessages() {
+        var ordered = [];
+        $messages.children().each(function () {
+            var $el = $(this);
+            if ($el.hasClass('sitegenie-chat-message--user'))     ordered.push({ type: 'user', text: $el.text() });
+            else if ($el.hasClass('sitegenie-chat-message--ai'))  ordered.push({ type: 'ai', text: $el.text() });
+            else if ($el.hasClass('sitegenie-action-badge'))      ordered.push({ type: 'badge', html: $el.html() });
+        });
+        sessionStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(ordered));
     }
 
     function restoreSession() {
         try {
-            var history = sessionStorage.getItem(STORAGE_KEY_HISTORY);
-            var msgs    = sessionStorage.getItem(STORAGE_KEY_MESSAGES);
-            if (!history || !msgs) return;
+            var msgs   = sessionStorage.getItem(STORAGE_KEY_MESSAGES);
+            var convId = sessionStorage.getItem(STORAGE_KEY_CONV_ID);
+            if (!msgs) return;
 
-            conversationHistory = JSON.parse(history);
+            currentConversationId = parseInt(convId) || 0;
             var parsed = JSON.parse(msgs);
             if (!parsed.length) return;
 
-            // Rimuovi messaggio di benvenuto e suggerimenti
             $messages.empty();
-            $('.chatpress-chat-suggestions').hide();
-
+            $('.sitegenie-chat-suggestions').hide();
             parsed.forEach(function (m) {
                 if (m.type === 'badge') appendBadge(m.html);
                 else appendMessage(m.text, m.type);
