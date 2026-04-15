@@ -1,16 +1,25 @@
 jQuery(function ($) {
 
+    // Toggle sezioni provider
+    function toggleProvider() {
+        var provider = $('#sitegenie-provider-select').val();
+        $('.sitegenie-provider-section').hide();
+        $('#sitegenie-provider-' + provider).show();
+    }
+    $('#sitegenie-provider-select').on('change', toggleProvider);
+    toggleProvider();
+
     // Test connessione API
-    $('#chatpress-test-api').on('click', function () {
+    $('#sitegenie-test-api').on('click', function () {
         const $btn    = $(this);
-        const $result = $('#chatpress-test-result');
+        const $result = $('#sitegenie-test-result');
 
         $btn.prop('disabled', true).text('⏳ Test in corso...');
         $result.removeClass('success error').text('');
 
-        $.post(chatpress.ajax_url, {
-            action: 'chatpress_test_api',
-            nonce:  chatpress.nonce,
+        $.post(sitegenie.ajax_url, {
+            action: 'sitegenie_test_api',
+            nonce:  sitegenie.nonce,
         })
         .done(function (res) {
             if (res.success) {
@@ -28,15 +37,15 @@ jQuery(function ($) {
     });
 
     // Svuota log
-    $('#chatpress-clear-logs').on('click', function () {
+    $('#sitegenie-clear-logs').on('click', function () {
         if ( ! confirm( 'Sei sicuro di voler svuotare tutti i log? L\'operazione non è reversibile.' ) ) return;
 
         const $btn = $(this);
         $btn.prop('disabled', true).text('⏳ Svuotamento...');
 
-        $.post(chatpress.ajax_url, {
-            action: 'chatpress_clear_logs',
-            nonce:  chatpress.nonce,
+        $.post(sitegenie.ajax_url, {
+            action: 'sitegenie_clear_logs',
+            nonce:  sitegenie.nonce,
         })
         .done(function (res) {
             if (res.success) {
