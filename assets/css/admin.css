@@ -1,138 +1,34 @@
 /* ================================
-   ChatPress — Admin CSS
+   SiteGenie — Admin CSS
    ================================ */
 
-/* Header */
-.chatpress-header {
+/* Header gradient (custom) */
+.card {
+    max-width: inherit !important;
+}
+.sitegenie-header {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-    color: #fff;
-    padding: 24px 28px;
-    border-radius: 8px;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-.chatpress-header h1 {
-    color: #fff;
-    margin: 0;
-    font-size: 24px;
-}
-.chatpress-header p {
-    color: rgba(255,255,255,0.7);
-    margin: 4px 0 0;
-    font-size: 14px;
 }
 
-/* Grid 2 colonne */
-.chatpress-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 20px;
-}
-@media (max-width: 900px) {
-    .chatpress-grid { grid-template-columns: 1fr; }
-}
-
-/* Card */
-.chatpress-card {
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 20px 24px;
-}
-.chatpress-card h2 {
-    margin-top: 0;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 16px;
-}
-
-/* Test API */
-.chatpress-test-wrap {
-    margin-top: 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-#chatpress-test-result {
-    font-size: 13px;
-    font-weight: 500;
-}
-#chatpress-test-result.success { color: #00a32a; }
-#chatpress-test-result.error   { color: #d63638; }
-
-/* Stats log */
-.chatpress-stats-row {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 20px;
-}
-.chatpress-stat-card {
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 16px 24px;
-    text-align: center;
-    flex: 1;
-}
-.chatpress-stat-number {
+/* Stat cards (custom colors) */
+.sitegenie-stat-number {
     display: block;
     font-size: 32px;
     font-weight: 700;
     color: #0f3460;
-    margin-bottom: 10px
+    margin-bottom: 10px;
 }
-.chatpress-stat-label {
+.sitegenie-stat-label {
     font-size: 12px;
     color: #757575;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-/* Badge */
-.chatpress-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 12px;
+/* Test API result colors (usato da admin.js) */
+#sitegenie-test-result {
+    font-size: 13px;
     font-weight: 500;
 }
-.chatpress-badge--success { background: #d1fae5; color: #065f46; }
-.chatpress-badge--error   { background: #fee2e2; color: #991b1b; }
-
-/* Paginazione log */
-.chatpress-pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #f0f0f0;
-}
-.chatpress-pagination-info {
-    font-size: 13px;
-    color: #757575;
-}
-
-/* Toast notification */
-.chatpress-toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: #1a1a2e;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-size: 13px;
-    opacity: 0;
-    transition: opacity 0.3s, transform 0.3s;
-    z-index: 999999;
-}
-.chatpress-toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
+#sitegenie-test-result.success { color: #00a32a; }
+#sitegenie-test-result.error   { color: #d63638; }
