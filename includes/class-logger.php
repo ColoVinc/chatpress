@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Logger — salva ogni chiamata API nel database
  */
-class ChatPress_Logger {
+class SiteGenie_Logger {
 
     /**
      * Salva un log nel DB
@@ -18,8 +18,9 @@ class ChatPress_Logger {
     ): void {
         global $wpdb;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- custom table, write operation
         $wpdb->insert(
-            $wpdb->prefix . 'chatpress_logs',
+            $wpdb->prefix . 'sitegenie_logs',
             [
                 'created_at'         => current_time( 'mysql' ),
                 'provider'           => $provider,
@@ -37,12 +38,12 @@ class ChatPress_Logger {
      */
     public static function get_logs( int $per_page = 30, int $page = 1 ): array {
         global $wpdb;
-        $table  = $wpdb->prefix . 'chatpress_logs';
         $offset = ( $page - 1 ) * $per_page;
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- custom table, dynamic data
         return $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM $table ORDER BY created_at DESC LIMIT %d OFFSET %d",
+                "SELECT * FROM {$wpdb->prefix}sitegenie_logs ORDER BY created_at DESC LIMIT %d OFFSET %d",
                 $per_page,
                 $offset
             ),
@@ -55,7 +56,8 @@ class ChatPress_Logger {
      */
     public static function count_logs(): int {
         global $wpdb;
-        return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}chatpress_logs" );
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, dynamic data
+        return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}sitegenie_logs" );
     }
 
     /**
@@ -63,14 +65,14 @@ class ChatPress_Logger {
      */
     public static function get_stats(): array {
         global $wpdb;
-        $table = $wpdb->prefix . 'chatpress_logs';
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- custom table, dynamic data
         $stats = $wpdb->get_row(
             "SELECT
                 COUNT(*) as total_calls,
                 SUM(prompt_tokens + completion_tokens) as total_tokens,
                 SUM(CASE WHEN status = 'error' THEN 1 ELSE 0 END) as total_errors
-            FROM $table",
+            FROM {$wpdb->prefix}sitegenie_logs",
             ARRAY_A
         );
 
@@ -82,6 +84,7 @@ class ChatPress_Logger {
      */
     public static function clear_logs(): void {
         global $wpdb;
-        $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}chatpress_logs" );
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, truncate operation
+        $wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}sitegenie_logs" );
     }
 }
