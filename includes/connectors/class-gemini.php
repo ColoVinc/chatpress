@@ -182,6 +182,50 @@ class SiteGenie_Gemini extends SiteGenie_API_Connector {
         return $result;
     }
 
+    /**
+     * Streaming: manda la risposta testuale chunk per chunk via SSE.
+     * Usa l'endpoint streamGenerateContent di Gemini.
+     */
+    public function stream_response( string $prompt, array $options = [] ): void {
+        $model = $options['model'] ?? $this->model;
+        $url   = $this->api_base . $model . ':streamGenerateContent?alt=sse';
+
+        $body = [
+            'contents' => $options['contents'] ?? [
+                [ 'role' => 'user', 'parts' => [ [ 'text' => $prompt ] ] ]
+            ],
+            'generationConfig' => [
+                'maxOutputTokens' => $options['max_tokens']  ?? 1024,
+                'temperature'     => $options['temperature'] ?? 0.4,
+            ],
+        ];
+
+        if ( ! empty( $options['system_instruction'] ) ) {
+            $body['system_instruction'] = $options['system_instruction'];
+        }
+
+        $total_pt = 0;
+        $total_ct = 0;
+
+        $this->http_stream( $url, $body, [ 'x-goog-api-key' => $this->api_key ], function( $line ) use ( &$total_pt, &$total_ct ) {
+            $line = trim( $line );
+            if ( strpos( $line, 'data: ' ) !== 0 ) return;
+            $json = json_decode( substr( $line, 6 ), true );
+            if ( ! $json ) return;
+
+            $text = $json['candidates'][0]['content']['parts'][0]['text'] ?? '';
+            if ( $text !== '' ) {
+                echo "data: " . wp_json_encode( [ 'chunk' => $text ] ) . "\n\n";
+            }
+
+            $total_pt = $json['usageMetadata']['promptTokenCount']     ?? $total_pt;
+            $total_ct = $json['usageMetadata']['candidatesTokenCount'] ?? $total_ct;
+        });
+
+        SiteGenie_Logger::log( 'gemini', $total_pt, $total_ct, 'success' );
+        echo "data: [DONE]\n\n";
+    }
+
     public static function get_models(): array {
         return [
             'gemini-2.5-flash-lite' => 'Gemini 2.5 Flash-Lite (consigliato — 1.000 req/giorno gratis)',
