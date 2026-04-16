@@ -168,48 +168,110 @@ jQuery(function ($) {
 
         var $loading = appendMessage('⏳ Elaborazione in corso...', 'loading');
 
-        $.post(sitegenie_chat.ajax_url, {
-            action: 'sitegenie_chat',
+        // Costruisci URL SSE con parametri GET
+        var params = new URLSearchParams({
+            action: 'sitegenie_chat_stream',
             nonce: sitegenie_chat.nonce,
             message: msg,
             conversation_id: currentConversationId,
-        })
-        .done(function (res) {
+        });
+
+        // Contesto pagina corrente (se siamo nell'editor)
+        var pageContext = getPageContext();
+        if (pageContext) params.set('page_context', pageContext);
+
+        var url = sitegenie_chat.ajax_url + '?' + params.toString();
+
+        var $aiMsg = null;
+        var fullText = '';
+
+        fetch(url)
+        .then(function (res) {
             $loading.remove();
-            if (res.success) {
-                var data = res.data;
-                currentConversationId = data.conversation_id || currentConversationId;
+            var reader = res.body.getReader();
+            var decoder = new TextDecoder();
 
-                if (data.action_taken && data.action_taken.tool) {
-                    var label = toolLabels[data.action_taken.tool] || '⚡ Azione eseguita';
-                    var result = data.action_taken.result || {};
-                    var extraHtml = '';
-                    if ((data.action_taken.tool === 'create_post' || data.action_taken.tool === 'create_custom_post') && result.edit_url) {
-                        extraHtml = ' — <a href="' + result.edit_url + '" target="_blank">Apri nell\'editor</a>';
+            function read() {
+                return reader.read().then(function (result) {
+                    if (result.done) {
+                        finishStream();
+                        return;
                     }
-                    appendBadge(label + extraHtml);
-                }
+                    var lines = decoder.decode(result.value, { stream: true }).split('\n');
+                    lines.forEach(function (line) {
+                        line = line.trim();
+                        if (line.indexOf('data: ') !== 0) return;
+                        var payload = line.substring(6);
+                        if (payload === '[DONE]') return;
 
-                appendMessage(data.text, 'ai');
-                saveSession();
-            } else {
-                appendMessage('⚠️ ' + res.data, 'ai');
+                        try {
+                            var data = JSON.parse(payload);
+                        } catch (e) { return; }
+
+                        // Metadati (conversation_id, action_taken)
+                        if (data.meta) {
+                            currentConversationId = data.conversation_id || currentConversationId;
+                            if (data.action_taken && data.action_taken.tool) {
+                                var label = toolLabels[data.action_taken.tool] || '⚡ Azione eseguita';
+                                var result = data.action_taken.result || {};
+                                var extraHtml = '';
+                                if ((data.action_taken.tool === 'create_post' || data.action_taken.tool === 'create_custom_post') && result.edit_url) {
+                                    extraHtml = ' — <a href="' + result.edit_url + '" target="_blank">Apri nell\'editor</a>';
+                                }
+                                appendBadge(label + extraHtml);
+                                showToast(label, result.edit_url || null);
+                            }
+                            return;
+                        }
+
+                        // Errore
+                        if (data.error) {
+                            appendMessage('⚠️ ' + data.error, 'ai');
+                            return;
+                        }
+
+                        // Chunk di testo
+                        if (data.chunk) {
+                            fullText += data.chunk;
+                            if (!$aiMsg) {
+                                $aiMsg = $('<div>').addClass('sitegenie-chat-message sitegenie-chat-message--ai');
+                                $messages.append($aiMsg);
+                            }
+                            if (typeof marked !== 'undefined') {
+                                $aiMsg.html(marked.parse(fullText));
+                            } else {
+                                $aiMsg.text(fullText);
+                            }
+                            scrollToBottom();
+                        }
+                    });
+                    return read();
+                });
             }
+            return read();
         })
-        .fail(function () {
+        .catch(function () {
             $loading.remove();
             appendMessage('❌ Errore di connessione.', 'ai');
-        })
-        .always(function () {
+            finishStream();
+        });
+
+        function finishStream() {
+            saveSession();
             $input.prop('disabled', false);
             $send.prop('disabled', false);
             $input.focus();
-        });
+        }
     }
 
     // ── Helpers ───────────────────────────────────────────────────
     function appendMessage(text, type) {
-        var $msg = $('<div>').addClass('sitegenie-chat-message sitegenie-chat-message--' + type).text(text);
+        var $msg = $('<div>').addClass('sitegenie-chat-message sitegenie-chat-message--' + type);
+        if (type === 'ai' && typeof marked !== 'undefined') {
+            $msg.html(marked.parse(text));
+        } else {
+            $msg.text(text);
+        }
         $messages.append($msg);
         scrollToBottom();
         return $msg;
@@ -229,6 +291,43 @@ jQuery(function ($) {
         return $('<span>').text(str).html();
     }
 
+    function getPageContext() {
+        // Solo nelle pagine editor
+        var $body = $('body');
+        if (!$body.hasClass('post-php') && !$body.hasClass('post-new-php')) return null;
+
+        var title = '';
+        var content = '';
+
+        // Gutenberg
+        if (typeof wp !== 'undefined' && wp.data && wp.data.select('core/editor')) {
+            title = wp.data.select('core/editor').getEditedPostAttribute('title') || '';
+            content = wp.data.select('core/editor').getEditedPostContent() || '';
+        }
+        // Classic Editor
+        if (!title && $('#title').length) title = $('#title').val() || '';
+        if (!content && typeof tinyMCE !== 'undefined' && tinyMCE.activeEditor) {
+            content = tinyMCE.activeEditor.getContent({ format: 'text' }) || '';
+        }
+        if (!content && $('#content').length) content = $('#content').val() || '';
+
+        if (!title && !content) return null;
+
+        // Tronca il contenuto per non esplodere l'URL
+        content = content.replace(/<[^>]+>/g, ' ').substring(0, 1500);
+        return JSON.stringify({ title: title, content: content });
+    }
+
+    function showToast(label, editUrl) {
+        var html = '<div class="sitegenie-toast-content">' + label;
+        if (editUrl) html += ' <a href="' + editUrl + '" target="_blank">Apri nell\'editor →</a>';
+        html += '</div><button class="sitegenie-toast-close">&times;</button>';
+        var $toast = $('<div class="sitegenie-toast">').html(html).appendTo('body');
+        $toast.find('.sitegenie-toast-close').on('click', function () { $toast.remove(); });
+        setTimeout(function () { $toast.addClass('sitegenie-toast--visible'); }, 10);
+        setTimeout(function () { $toast.removeClass('sitegenie-toast--visible'); setTimeout(function () { $toast.remove(); }, 300); }, 5000);
+    }
+
     // ── Persistenza sessionStorage ────────────────────────────────
     function saveSession() {
         try {
@@ -242,7 +341,7 @@ jQuery(function ($) {
         $messages.children().each(function () {
             var $el = $(this);
             if ($el.hasClass('sitegenie-chat-message--user'))     ordered.push({ type: 'user', text: $el.text() });
-            else if ($el.hasClass('sitegenie-chat-message--ai'))  ordered.push({ type: 'ai', text: $el.text() });
+            else if ($el.hasClass('sitegenie-chat-message--ai'))  ordered.push({ type: 'ai', html: $el.html() });
             else if ($el.hasClass('sitegenie-action-badge'))      ordered.push({ type: 'badge', html: $el.html() });
         });
         sessionStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(ordered));
@@ -261,8 +360,14 @@ jQuery(function ($) {
             $messages.empty();
             $('.sitegenie-chat-suggestions').hide();
             parsed.forEach(function (m) {
-                if (m.type === 'badge') appendBadge(m.html);
-                else appendMessage(m.text, m.type);
+                if (m.type === 'badge') {
+                    appendBadge(m.html);
+                } else if (m.type === 'ai' && m.html) {
+                    var $msg = $('<div>').addClass('sitegenie-chat-message sitegenie-chat-message--ai').html(m.html);
+                    $messages.append($msg);
+                } else {
+                    appendMessage(m.text, m.type);
+                }
             });
         } catch (e) {}
     }
