@@ -72,7 +72,7 @@
                                     <td>
                                         <select name="sitegenie_openai_model">
                                             <?php foreach ( SiteGenie_OpenAI::get_models() as $sitegenie_value => $sitegenie_label ) : ?>
-                                                <option value="<?php echo esc_attr($sitegenie_value); ?>" <?php selected( get_option('sitegenie_openai_model', 'gpt-4o-mini'), $sitegenie_value ); ?>><?php echo esc_html($sitegenie_label); ?></option>
+                                                <option value="<?php echo esc_attr($sitegenie_value); ?>" <?php selected( get_option('sitegenie_openai_model', 'gpt-5.4-mini'), $sitegenie_value ); ?>><?php echo esc_html($sitegenie_label); ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </td>
@@ -96,7 +96,7 @@
                                     <td>
                                         <select name="sitegenie_claude_model">
                                             <?php foreach ( SiteGenie_Claude::get_models() as $sitegenie_value => $sitegenie_label ) : ?>
-                                                <option value="<?php echo esc_attr($sitegenie_value); ?>" <?php selected( get_option('sitegenie_claude_model', 'claude-sonnet-4-20250514'), $sitegenie_value ); ?>><?php echo esc_html($sitegenie_label); ?></option>
+                                                <option value="<?php echo esc_attr($sitegenie_value); ?>" <?php selected( get_option('sitegenie_claude_model', 'claude-sonnet-4-6'), $sitegenie_value ); ?>><?php echo esc_html($sitegenie_label); ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </td>
