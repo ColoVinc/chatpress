@@ -14,7 +14,7 @@ class SiteGenie_Tools {
      * Ogni tool ha: name, description, parameters (schema JSON).
      */
     public static function get_declarations(): array {
-        return [
+        $tools = [
 
             // ── POSTS ────────────────────────────────────────────────
             [
@@ -152,9 +152,132 @@ class SiteGenie_Tools {
                 ],
             ],
 
-            // ── IMMAGINI ─────────────────────────────────────────────
+            // ── UTENTI ────────────────────────────────────────────────
+            [
+                'name'        => 'get_users',
+                'description' => 'Recupera la lista degli utenti del sito. Usalo quando l\'utente vuole vedere chi è registrato.',
+                'parameters'  => [
+                    'type'       => 'object',
+                    'properties' => [
+                        'role'  => [ 'type' => 'string',  'description' => 'Filtra per ruolo: administrator, editor, author, contributor, subscriber (opzionale)' ],
+                        'limit' => [ 'type' => 'integer', 'description' => 'Quanti utenti restituire. Default: 10' ],
+                    ],
+                ],
+            ],
+
+            [
+                'name'        => 'create_user',
+                'description' => 'Crea un nuovo utente WordPress. Usalo quando l\'utente chiede di aggiungere un nuovo utente al sito.',
+                'parameters'  => [
+                    'type'       => 'object',
+                    'properties' => [
+                        'username' => [ 'type' => 'string', 'description' => 'Nome utente (login)' ],
+                        'email'    => [ 'type' => 'string', 'description' => 'Indirizzo email' ],
+                        'role'     => [ 'type' => 'string', 'description' => 'Ruolo: editor, author, contributor, subscriber. Default: subscriber' ],
+                        'name'     => [ 'type' => 'string', 'description' => 'Nome visualizzato (opzionale)' ],
+                    ],
+                    'required' => [ 'username', 'email' ],
+                ],
+            ],
+
+            // ── IMPOSTAZIONI SITO ─────────────────────────────────────
+            [
+                'name'        => 'update_site_settings',
+                'description' => 'Modifica le impostazioni base del sito WordPress: titolo, tagline, post per pagina, stato commenti. Usalo quando l\'utente chiede di cambiare il nome del sito, la descrizione o altre impostazioni generali.',
+                'parameters'  => [
+                    'type'       => 'object',
+                    'properties' => [
+                        'blogname'               => [ 'type' => 'string',  'description' => 'Titolo del sito' ],
+                        'blogdescription'        => [ 'type' => 'string',  'description' => 'Tagline / descrizione breve del sito' ],
+                        'posts_per_page'         => [ 'type' => 'integer', 'description' => 'Numero di post per pagina' ],
+                        'default_comment_status' => [ 'type' => 'string',  'description' => 'Commenti abilitati di default: open o closed' ],
+                    ],
+                ],
+            ],
+
+            // ── COMMENTI ──────────────────────────────────────────────
+            [
+                'name'        => 'get_comments',
+                'description' => 'Recupera i commenti del sito. Usalo quando l\'utente vuole vedere, moderare o controllare i commenti.',
+                'parameters'  => [
+                    'type'       => 'object',
+                    'properties' => [
+                        'status' => [ 'type' => 'string',  'description' => 'Stato: all, hold, approve, spam, trash. Default: all' ],
+                        'limit'  => [ 'type' => 'integer', 'description' => 'Quanti commenti restituire. Default: 10' ],
+                        'post_id'=> [ 'type' => 'integer', 'description' => 'Filtra per ID post (opzionale)' ],
+                    ],
+                ],
+            ],
+
+            [
+                'name'        => 'moderate_comment',
+                'description' => 'Modera un commento: approvalo, segnalo come spam o eliminalo. Usalo quando l\'utente chiede di approvare, rifiutare o eliminare commenti.',
+                'parameters'  => [
+                    'type'       => 'object',
+                    'properties' => [
+                        'comment_id' => [ 'type' => 'integer', 'description' => 'ID del commento' ],
+                        'action'     => [ 'type' => 'string',  'description' => 'Azione: approve, spam, trash' ],
+                    ],
+                    'required' => [ 'comment_id', 'action' ],
+                ],
+            ],
+
+            [
+                'name'        => 'reply_comment',
+                'description' => 'Rispondi a un commento esistente. Usalo quando l\'utente chiede di rispondere a un commento specifico.',
+                'parameters'  => [
+                    'type'       => 'object',
+                    'properties' => [
+                        'comment_id' => [ 'type' => 'integer', 'description' => 'ID del commento a cui rispondere' ],
+                        'content'    => [ 'type' => 'string',  'description' => 'Testo della risposta' ],
+                    ],
+                    'required' => [ 'comment_id', 'content' ],
+                ],
+            ],
 
         ];
+
+        // ── WOOCOMMERCE (solo se attivo) ─────────────────────────
+        if ( class_exists( 'WooCommerce' ) ) {
+            $tools[] = [
+                'name'        => 'get_products',
+                'description' => 'Recupera la lista dei prodotti WooCommerce.',
+                'parameters'  => [
+                    'type'       => 'object',
+                    'properties' => [
+                        'limit'  => [ 'type' => 'integer', 'description' => 'Quanti prodotti restituire. Default: 10' ],
+                        'status' => [ 'type' => 'string',  'description' => 'Stato: publish, draft, any. Default: publish' ],
+                    ],
+                ],
+            ];
+            $tools[] = [
+                'name'        => 'create_product',
+                'description' => 'Crea un nuovo prodotto WooCommerce semplice.',
+                'parameters'  => [
+                    'type'       => 'object',
+                    'properties' => [
+                        'name'          => [ 'type' => 'string',  'description' => 'Nome del prodotto' ],
+                        'price'         => [ 'type' => 'string',  'description' => 'Prezzo (es. "29.90")' ],
+                        'description'   => [ 'type' => 'string',  'description' => 'Descrizione del prodotto (opzionale)' ],
+                        'status'        => [ 'type' => 'string',  'description' => 'Stato: draft, publish. Default: draft' ],
+                    ],
+                    'required' => [ 'name', 'price' ],
+                ],
+            ];
+            $tools[] = [
+                'name'        => 'get_orders',
+                'description' => 'Recupera gli ordini WooCommerce recenti.',
+                'parameters'  => [
+                    'type'       => 'object',
+                    'properties' => [
+                        'limit'  => [ 'type' => 'integer', 'description' => 'Quanti ordini restituire. Default: 10' ],
+                        'status' => [ 'type' => 'string',  'description' => 'Stato: any, processing, completed, on-hold. Default: any' ],
+                    ],
+                ],
+            ];
+        }
+
+        return $tools;
     }
 
     /**
@@ -176,6 +299,15 @@ class SiteGenie_Tools {
             case 'get_custom_post_types': return self::get_custom_post_types();
             case 'create_custom_post':    return self::create_custom_post( $args );
             case 'update_custom_post':    return self::update_custom_post( $args );
+            case 'get_comments':          return self::get_comments( $args );
+            case 'moderate_comment':      return self::moderate_comment( $args );
+            case 'reply_comment':         return self::reply_comment( $args );
+            case 'update_site_settings':  return self::update_site_settings( $args );
+            case 'get_users':             return self::tool_get_users( $args );
+            case 'create_user':           return self::tool_create_user( $args );
+            case 'get_products':          return self::tool_get_products( $args );
+            case 'create_product':        return self::tool_create_product( $args );
+            case 'get_orders':            return self::tool_get_orders( $args );
             default:
                 return [ 'error' => "Tool \"$name\" non riconosciuto." ];
         }
@@ -581,5 +713,264 @@ class SiteGenie_Tools {
             'message'        => "Post \"" . get_the_title( $post_id ) . "\" (ID: $post_id) aggiornato."
                               . ( $fields_updated ? ' Campi ACF aggiornati: ' . implode( ', ', $fields_updated ) . '.' : '' ),
         ];
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // COMMENTI
+    // ─────────────────────────────────────────────────────────────────
+
+    private static function get_comments( array $args ): array {
+        $limit   = min( (int) ( $args['limit'] ?? 10 ), 30 );
+        $status  = $args['status'] ?? 'all';
+        $query   = [ 'number' => $limit, 'status' => $status, 'orderby' => 'comment_date', 'order' => 'DESC' ];
+
+        if ( ! empty( $args['post_id'] ) ) {
+            $query['post_id'] = (int) $args['post_id'];
+        }
+
+        $comments = get_comments( $query );
+        if ( empty( $comments ) ) {
+            return [ 'success' => true, 'count' => 0, 'comments' => [], 'message' => 'Nessun commento trovato.' ];
+        }
+
+        $result = [];
+        foreach ( $comments as $c ) {
+            $result[] = [
+                'id'      => $c->comment_ID,
+                'author'  => $c->comment_author,
+                'email'   => $c->comment_author_email,
+                'content' => wp_trim_words( $c->comment_content, 30 ),
+                'status'  => wp_get_comment_status( $c ),
+                'date'    => $c->comment_date,
+                'post_id' => $c->comment_post_ID,
+                'post'    => get_the_title( $c->comment_post_ID ),
+            ];
+        }
+
+        return [ 'success' => true, 'count' => count( $result ), 'comments' => $result ];
+    }
+
+    private static function moderate_comment( array $args ): array {
+        $comment_id = (int) $args['comment_id'];
+        $action     = $args['action'] ?? '';
+
+        $comment = get_comment( $comment_id );
+        if ( ! $comment ) {
+            return [ 'error' => "Commento con ID $comment_id non trovato." ];
+        }
+
+        $map = [ 'approve' => '1', 'spam' => 'spam', 'trash' => 'trash' ];
+        if ( ! isset( $map[ $action ] ) ) {
+            return [ 'error' => "Azione \"$action\" non valida. Usa: approve, spam, trash." ];
+        }
+
+        $old_status = $comment->comment_approved;
+
+        global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- direct update needed
+        $wpdb->update(
+            $wpdb->comments,
+            [ 'comment_approved' => $map[ $action ] ],
+            [ 'comment_ID' => $comment_id ],
+            [ '%s' ],
+            [ '%d' ]
+        );
+        clean_comment_cache( $comment_id );
+        wp_update_comment_count_now( $comment->comment_post_ID );
+
+        $labels = [ 'approve' => 'approvato', 'spam' => 'segnalato come spam', 'trash' => 'eliminato' ];
+        return [
+            'success'    => true,
+            'old_status' => $old_status,
+            'new_status' => $map[ $action ],
+            'message'    => "Commento #$comment_id di \"{$comment->comment_author}\" {$labels[$action]}.",
+        ];
+    }
+
+    private static function reply_comment( array $args ): array {
+        $comment_id = (int) $args['comment_id'];
+        $content    = $args['content'] ?? '';
+
+        $parent = get_comment( $comment_id );
+        if ( ! $parent ) {
+            return [ 'error' => "Commento con ID $comment_id non trovato." ];
+        }
+
+        $user = wp_get_current_user();
+        $new_id = wp_insert_comment( [
+            'comment_post_ID' => $parent->comment_post_ID,
+            'comment_parent'  => $comment_id,
+            'comment_content' => wp_kses_post( $content ),
+            'comment_author'  => $user->display_name,
+            'comment_author_email' => $user->user_email,
+            'comment_approved' => 1,
+            'user_id'         => $user->ID,
+        ] );
+
+        if ( ! $new_id ) {
+            return [ 'error' => 'Impossibile inserire la risposta.' ];
+        }
+
+        return [
+            'success' => true,
+            'comment_id' => $new_id,
+            'message' => "Risposta al commento #$comment_id pubblicata (ID: $new_id).",
+        ];
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // IMPOSTAZIONI SITO
+    // ─────────────────────────────────────────────────────────────────
+
+    private static function update_site_settings( array $args ): array {
+        $allowed = [ 'blogname', 'blogdescription', 'posts_per_page', 'default_comment_status' ];
+        $updated = [];
+
+        foreach ( $allowed as $key ) {
+            if ( ! isset( $args[ $key ] ) ) continue;
+
+            $value = $key === 'posts_per_page' ? absint( $args[ $key ] ) : sanitize_text_field( $args[ $key ] );
+            update_option( $key, $value );
+            $updated[] = $key;
+        }
+
+        if ( empty( $updated ) ) {
+            return [ 'error' => 'Nessuna impostazione da aggiornare.' ];
+        }
+
+        return [
+            'success' => true,
+            'updated' => $updated,
+            'message' => 'Impostazioni aggiornate: ' . implode( ', ', $updated ) . '.',
+        ];
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // UTENTI
+    // ─────────────────────────────────────────────────────────────────
+
+    private static function tool_get_users( array $args ): array {
+        $query = [ 'number' => min( (int) ( $args['limit'] ?? 10 ), 30 ), 'orderby' => 'registered', 'order' => 'DESC' ];
+        if ( ! empty( $args['role'] ) ) $query['role'] = sanitize_text_field( $args['role'] );
+
+        $users  = get_users( $query );
+        $result = [];
+        foreach ( $users as $u ) {
+            $result[] = [
+                'id'    => $u->ID,
+                'login' => $u->user_login,
+                'name'  => $u->display_name,
+                'email' => $u->user_email,
+                'role'  => implode( ', ', $u->roles ),
+                'registered' => $u->user_registered,
+            ];
+        }
+
+        return [ 'success' => true, 'count' => count( $result ), 'users' => $result ];
+    }
+
+    private static function tool_create_user( array $args ): array {
+        $username = sanitize_user( $args['username'] ?? '' );
+        $email    = sanitize_email( $args['email'] ?? '' );
+        $role     = sanitize_text_field( $args['role'] ?? 'subscriber' );
+
+        // Non permettere la creazione di administrator via chat
+        if ( $role === 'administrator' ) {
+            return [ 'error' => 'Non è possibile creare utenti administrator dalla chat per motivi di sicurezza.' ];
+        }
+
+        $allowed_roles = [ 'editor', 'author', 'contributor', 'subscriber' ];
+        if ( ! in_array( $role, $allowed_roles, true ) ) $role = 'subscriber';
+
+        $password = wp_generate_password( 16 );
+        $user_id  = wp_insert_user( [
+            'user_login'   => $username,
+            'user_email'   => $email,
+            'user_pass'    => $password,
+            'display_name' => sanitize_text_field( $args['name'] ?? $username ),
+            'role'         => $role,
+        ] );
+
+        if ( is_wp_error( $user_id ) ) {
+            return [ 'error' => $user_id->get_error_message() ];
+        }
+
+        return [
+            'success' => true,
+            'user_id' => $user_id,
+            'message' => "Utente \"$username\" creato con ruolo \"$role\" (ID: $user_id). Password generata automaticamente.",
+        ];
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // WOOCOMMERCE
+    // ─────────────────────────────────────────────────────────────────
+
+    private static function tool_get_products( array $args ): array {
+        if ( ! class_exists( 'WooCommerce' ) ) return [ 'error' => 'WooCommerce non è attivo.' ];
+
+        $limit  = min( (int) ( $args['limit'] ?? 10 ), 30 );
+        $status = $args['status'] ?? 'publish';
+
+        $products = wc_get_products( [ 'limit' => $limit, 'status' => $status, 'orderby' => 'date', 'order' => 'DESC' ] );
+        $result   = [];
+
+        foreach ( $products as $p ) {
+            $result[] = [
+                'id'    => $p->get_id(),
+                'name'  => $p->get_name(),
+                'price' => $p->get_price(),
+                'stock' => $p->get_stock_status(),
+                'status'=> $p->get_status(),
+                'type'  => $p->get_type(),
+            ];
+        }
+
+        return [ 'success' => true, 'count' => count( $result ), 'products' => $result ];
+    }
+
+    private static function tool_create_product( array $args ): array {
+        if ( ! class_exists( 'WooCommerce' ) ) return [ 'error' => 'WooCommerce non è attivo.' ];
+
+        $product = new \WC_Product_Simple();
+        $product->set_name( sanitize_text_field( $args['name'] ) );
+        $product->set_regular_price( sanitize_text_field( $args['price'] ) );
+        $product->set_status( in_array( $args['status'] ?? 'draft', [ 'draft', 'publish' ] ) ? $args['status'] : 'draft' );
+
+        if ( ! empty( $args['description'] ) ) {
+            $product->set_description( wp_kses_post( $args['description'] ) );
+        }
+
+        $id = $product->save();
+
+        return [
+            'success'    => true,
+            'product_id' => $id,
+            'edit_url'   => get_edit_post_link( $id, 'raw' ),
+            'message'    => "Prodotto \"{$args['name']}\" creato a €{$args['price']} (ID: $id).",
+        ];
+    }
+
+    private static function tool_get_orders( array $args ): array {
+        if ( ! class_exists( 'WooCommerce' ) ) return [ 'error' => 'WooCommerce non è attivo.' ];
+
+        $limit  = min( (int) ( $args['limit'] ?? 10 ), 30 );
+        $status = $args['status'] ?? 'any';
+
+        $orders = wc_get_orders( [ 'limit' => $limit, 'status' => $status, 'orderby' => 'date', 'order' => 'DESC' ] );
+        $result = [];
+
+        foreach ( $orders as $o ) {
+            $result[] = [
+                'id'     => $o->get_id(),
+                'status' => $o->get_status(),
+                'total'  => $o->get_total(),
+                'date'   => $o->get_date_created() ? $o->get_date_created()->date( 'Y-m-d H:i' ) : '',
+                'customer' => $o->get_billing_first_name() . ' ' . $o->get_billing_last_name(),
+                'items'  => $o->get_item_count(),
+            ];
+        }
+
+        return [ 'success' => true, 'count' => count( $result ), 'orders' => $result ];
     }
 }
