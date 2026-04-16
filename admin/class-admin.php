@@ -119,14 +119,14 @@ class SiteGenie_Admin {
         ]);
         register_setting( 'sitegenie_settings', 'sitegenie_openai_model', [
             'sanitize_callback' => 'sanitize_text_field',
-            'default'           => 'gpt-4o-mini',
+            'default'           => 'gpt-5.4-mini',
         ]);
         register_setting( 'sitegenie_settings', 'sitegenie_claude_api_key', [
             'sanitize_callback' => 'sanitize_text_field',
         ]);
         register_setting( 'sitegenie_settings', 'sitegenie_claude_model', [
             'sanitize_callback' => 'sanitize_text_field',
-            'default'           => 'claude-sonnet-4-20250514',
+            'default'           => 'claude-sonnet-4-6',
         ]);
         register_setting( 'sitegenie_settings', 'sitegenie_rate_limit', [
             'sanitize_callback' => 'absint',
@@ -182,6 +182,11 @@ class SiteGenie_Admin {
 
         if ( strpos( $hook, 'sitegenie' ) === false ) return;
 
+        // Chart.js per la pagina log
+        if ( strpos( $hook, 'sitegenie-logs' ) !== false ) {
+            wp_enqueue_script( 'chartjs', SITEGENIE_PLUGIN_URL . 'assets/vendor/chart.min.js', [], '4.4.7', true );
+        }
+
         // Bootstrap JS (CSS già caricato globalmente dal chat widget)
         wp_enqueue_script( 'bootstrap', SITEGENIE_PLUGIN_URL . 'assets/vendor/bootstrap.bundle.min.js', [], '5.3.3', true );
 
@@ -224,6 +229,8 @@ class SiteGenie_Admin {
         $total_pages = max( 1, ceil( $total_items / $per_page ) );
         $logs        = SiteGenie_Logger::get_logs( $per_page, $current );
         $stats       = SiteGenie_Logger::get_stats();
+        $daily_stats    = SiteGenie_Logger::get_daily_stats( 30 );
+        $provider_stats = SiteGenie_Logger::get_provider_stats();
         require_once SITEGENIE_PLUGIN_DIR . 'templates/logs-page.php';
     }
 
@@ -295,7 +302,7 @@ class SiteGenie_Admin {
             $api_key = get_option( 'sitegenie_openai_api_key', '' );
             if ( empty( $api_key ) ) return null;
             $connector = new SiteGenie_OpenAI( $api_key );
-            $connector->set_model( get_option( 'sitegenie_openai_model', 'gpt-4o-mini' ) );
+            $connector->set_model( get_option( 'sitegenie_openai_model', 'gpt-5.4-mini' ) );
             return $connector;
         }
 
@@ -303,7 +310,7 @@ class SiteGenie_Admin {
             $api_key = get_option( 'sitegenie_claude_api_key', '' );
             if ( empty( $api_key ) ) return null;
             $connector = new SiteGenie_Claude( $api_key );
-            $connector->set_model( get_option( 'sitegenie_claude_model', 'claude-sonnet-4-20250514' ) );
+            $connector->set_model( get_option( 'sitegenie_claude_model', 'claude-sonnet-4-6' ) );
             return $connector;
         }
 
