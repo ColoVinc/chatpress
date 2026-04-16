@@ -157,6 +157,44 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
         return $tools;
     }
 
+    /**
+     * Streaming: manda la risposta testuale chunk per chunk via SSE.
+     */
+    public function stream_response( string $prompt, array $options = [] ): void {
+        $body = [
+            'model'       => $options['model'] ?? $this->model,
+            'messages'    => $options['messages'] ?? [ [ 'role' => 'user', 'content' => $prompt ] ],
+            'max_tokens'  => $options['max_tokens']  ?? 1024,
+            'temperature' => $options['temperature'] ?? 0.4,
+            'stream'      => true,
+        ];
+
+        $total_pt = 0;
+        $total_ct = 0;
+
+        $this->http_stream( $this->api_base, $body, $this->auth_headers(), function( $line ) use ( &$total_pt, &$total_ct ) {
+            $line = trim( $line );
+            if ( strpos( $line, 'data: ' ) !== 0 ) return;
+            $payload = substr( $line, 6 );
+            if ( $payload === '[DONE]' ) return;
+            $json = json_decode( $payload, true );
+            if ( ! $json ) return;
+
+            $text = $json['choices'][0]['delta']['content'] ?? '';
+            if ( $text !== '' ) {
+                echo "data: " . wp_json_encode( [ 'chunk' => $text ] ) . "\n\n";
+            }
+
+            if ( isset( $json['usage'] ) ) {
+                $total_pt = $json['usage']['prompt_tokens']     ?? $total_pt;
+                $total_ct = $json['usage']['completion_tokens'] ?? $total_ct;
+            }
+        });
+
+        SiteGenie_Logger::log( 'openai', $total_pt, $total_ct, 'success' );
+        echo "data: [DONE]\n\n";
+    }
+
     public static function get_models(): array {
         return [
             'gpt-4o-mini' => 'GPT-4o Mini (economico, veloce)',
