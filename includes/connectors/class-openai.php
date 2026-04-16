@@ -101,7 +101,7 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
                 $tool_args = json_decode( $tc['function']['arguments'], true ) ?? [];
                 $tool_result = SiteGenie_Tools::execute( $tool_name, $tool_args );
 
-                if ( in_array( $tool_name, [ 'create_post', 'update_post', 'delete_post', 'create_custom_post', 'update_custom_post' ] ) ) {
+                if ( in_array( $tool_name, [ 'create_post', 'update_post', 'delete_post', 'create_custom_post', 'update_custom_post', 'moderate_comment', 'reply_comment', 'update_site_settings', 'create_user', 'create_product' ] ) ) {
                     $last_action = [ 'tool' => $tool_name, 'result' => $tool_result ];
                 }
 
@@ -197,9 +197,12 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
 
     public static function get_models(): array {
         return [
-            'gpt-4o-mini' => 'GPT-4o Mini (economico, veloce)',
-            'gpt-4o'      => 'GPT-4o (più capace)',
-            'gpt-4.1'     => 'GPT-4.1 (ultimo modello)',
+            'gpt-5.4-nano'  => 'GPT-5.4 Nano (più economico, $0.20/M token)',
+            'gpt-5.4-mini'  => 'GPT-5.4 Mini (bilanciato, $0.75/M token)',
+            'gpt-5.4'       => 'GPT-5.4 (flagship, reasoning avanzato)',
+            'gpt-4.1'       => 'GPT-4.1 (ottimo per coding, contesto 1M)',
+            'gpt-4.1-mini'  => 'GPT-4.1 Mini (veloce, buon rapporto qualità/prezzo)',
+            'gpt-4.1-nano'  => 'GPT-4.1 Nano (ultra-economico)',
         ];
     }
 }
