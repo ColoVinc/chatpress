@@ -157,6 +157,49 @@ class SiteGenie_Claude extends SiteGenie_API_Connector {
         return $tools;
     }
 
+    /**
+     * Streaming: manda la risposta testuale chunk per chunk via SSE.
+     */
+    public function stream_response( string $prompt, array $options = [] ): void {
+        $body = [
+            'model'      => $options['model'] ?? $this->model,
+            'max_tokens' => $options['max_tokens'] ?? 1024,
+            'messages'   => $options['messages'] ?? [ [ 'role' => 'user', 'content' => $prompt ] ],
+            'stream'     => true,
+        ];
+
+        if ( ! empty( $options['system'] ) ) {
+            $body['system'] = $options['system'];
+        }
+
+        $total_pt = 0;
+        $total_ct = 0;
+
+        $this->http_stream( $this->api_base, $body, $this->auth_headers(), function( $line ) use ( &$total_pt, &$total_ct ) {
+            $line = trim( $line );
+            if ( strpos( $line, 'data: ' ) !== 0 ) return;
+            $json = json_decode( substr( $line, 6 ), true );
+            if ( ! $json ) return;
+
+            if ( $json['type'] === 'content_block_delta' ) {
+                $text = $json['delta']['text'] ?? '';
+                if ( $text !== '' ) {
+                    echo "data: " . wp_json_encode( [ 'chunk' => $text ] ) . "\n\n";
+                }
+            }
+
+            if ( $json['type'] === 'message_delta' && isset( $json['usage'] ) ) {
+                $total_ct = $json['usage']['output_tokens'] ?? $total_ct;
+            }
+            if ( $json['type'] === 'message_start' && isset( $json['message']['usage'] ) ) {
+                $total_pt = $json['message']['usage']['input_tokens'] ?? $total_pt;
+            }
+        });
+
+        SiteGenie_Logger::log( 'claude', $total_pt, $total_ct, 'success' );
+        echo "data: [DONE]\n\n";
+    }
+
     public static function get_models(): array {
         return [
             'claude-sonnet-4-20250514' => 'Claude Sonnet 4 (bilanciato)',
