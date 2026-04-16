@@ -103,7 +103,7 @@ class SiteGenie_Claude extends SiteGenie_API_Connector {
                 $tool_args   = $tu['input'] ?? [];
                 $tool_result = SiteGenie_Tools::execute( $tool_name, $tool_args );
 
-                if ( in_array( $tool_name, [ 'create_post', 'update_post', 'delete_post', 'create_custom_post', 'update_custom_post' ] ) ) {
+                if ( in_array( $tool_name, [ 'create_post', 'update_post', 'delete_post', 'create_custom_post', 'update_custom_post', 'moderate_comment', 'reply_comment', 'update_site_settings', 'create_user', 'create_product' ] ) ) {
                     $last_action = [ 'tool' => $tool_name, 'result' => $tool_result ];
                 }
 
@@ -202,8 +202,9 @@ class SiteGenie_Claude extends SiteGenie_API_Connector {
 
     public static function get_models(): array {
         return [
-            'claude-sonnet-4-20250514' => 'Claude Sonnet 4 (bilanciato)',
-            'claude-haiku-4-20250514'  => 'Claude Haiku 4 (veloce, economico)',
+            'claude-haiku-4-5-20251001' => 'Claude Haiku 4.5 (veloce, economico — $1/M token)',
+            'claude-sonnet-4-6'         => 'Claude Sonnet 4.6 (bilanciato — $3/M token)',
+            'claude-opus-4-6'           => 'Claude Opus 4.6 (più intelligente — $5/M token)',
         ];
     }
 }
