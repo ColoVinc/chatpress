@@ -27,7 +27,6 @@ class SiteGenie_Chat {
     }
 
     public function enqueue_assets() {
-        wp_enqueue_style( 'bootstrap', SITEGENIE_PLUGIN_URL . 'assets/vendor/bootstrap.min.css', [], '5.3.3' );
         wp_enqueue_style( 'fontawesome', SITEGENIE_PLUGIN_URL . 'assets/vendor/fontawesome.min.css', [], '6.5.1' );
 
         wp_enqueue_style( 'sitegenie-chat', SITEGENIE_PLUGIN_URL . 'assets/css/chat.css', [], SITEGENIE_VERSION );
