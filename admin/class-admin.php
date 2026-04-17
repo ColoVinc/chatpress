@@ -187,7 +187,8 @@ class SiteGenie_Admin {
             wp_enqueue_script( 'chartjs', SITEGENIE_PLUGIN_URL . 'assets/vendor/chart.min.js', [], '4.4.7', true );
         }
 
-        // Bootstrap JS (CSS già caricato globalmente dal chat widget)
+        // Bootstrap solo nelle pagine SiteGenie (settings, logs, knowledge)
+        wp_enqueue_style( 'bootstrap', SITEGENIE_PLUGIN_URL . 'assets/vendor/bootstrap.min.css', [], '5.3.3' );
         wp_enqueue_script( 'bootstrap', SITEGENIE_PLUGIN_URL . 'assets/vendor/bootstrap.bundle.min.js', [], '5.3.3', true );
 
         wp_enqueue_style(
