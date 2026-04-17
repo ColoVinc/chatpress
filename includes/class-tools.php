@@ -235,6 +235,31 @@ class SiteGenie_Tools {
                 ],
             ],
 
+            // ── MENU ─────────────────────────────────────────────────
+            [
+                'name'        => 'get_menus',
+                'description' => 'Recupera i menu di navigazione del sito con le relative voci. Usalo quando l\'utente vuole vedere o gestire i menu.',
+                'parameters'  => [
+                    'type'       => 'object',
+                    'properties' => new stdClass(),
+                ],
+            ],
+
+            [
+                'name'        => 'add_menu_item',
+                'description' => 'Aggiunge una voce a un menu di navigazione. IMPORTANTE: chiama SEMPRE get_menus prima di usare questo tool per ottenere l\'ID del menu.',
+                'parameters'  => [
+                    'type'       => 'object',
+                    'properties' => [
+                        'menu_id' => [ 'type' => 'integer', 'description' => 'ID del menu a cui aggiungere la voce' ],
+                        'title'   => [ 'type' => 'string',  'description' => 'Testo della voce di menu' ],
+                        'url'     => [ 'type' => 'string',  'description' => 'URL personalizzato (per link custom)' ],
+                        'page_id' => [ 'type' => 'integer', 'description' => 'ID della pagina/post da linkare (alternativo a url)' ],
+                    ],
+                    'required' => [ 'menu_id', 'title' ],
+                ],
+            ],
+
         ];
 
         // ── WOOCOMMERCE (solo se attivo) ─────────────────────────
@@ -308,6 +333,8 @@ class SiteGenie_Tools {
             case 'get_products':          return self::tool_get_products( $args );
             case 'create_product':        return self::tool_create_product( $args );
             case 'get_orders':            return self::tool_get_orders( $args );
+            case 'get_menus':             return self::tool_get_menus();
+            case 'add_menu_item':         return self::tool_add_menu_item( $args );
             default:
                 return [ 'error' => "Tool \"$name\" non riconosciuto." ];
         }
@@ -404,6 +431,9 @@ class SiteGenie_Tools {
                 'status'   => $post->post_status,
                 'type'     => $post->post_type,
                 'date'     => $post->post_date,
+                'excerpt'  => $post->post_excerpt ?: '',
+                'content'  => mb_strimwidth( wp_strip_all_tags( $post->post_content ), 0, 1000, '...' ),
+                'word_count' => str_word_count( wp_strip_all_tags( $post->post_content ) ),
                 'edit_url' => get_edit_post_link( $post->ID, 'raw' ),
             ];
         }
@@ -972,5 +1002,94 @@ class SiteGenie_Tools {
         }
 
         return [ 'success' => true, 'count' => count( $result ), 'orders' => $result ];
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // MENU
+    // ─────────────────────────────────────────────────────────────────
+
+    private static function tool_get_menus(): array {
+        $result = [];
+
+        // Menu classici (wp_nav_menus)
+        $menus = wp_get_nav_menus();
+        if ( empty( $menus ) ) {
+            // Fallback: cerca direttamente nella tassonomia nav_menu
+            $menus = get_terms( [ 'taxonomy' => 'nav_menu', 'hide_empty' => false ] );
+        }
+        foreach ( $menus as $menu ) {
+            $items     = wp_get_nav_menu_items( $menu->term_id ) ?: [];
+            $menu_data = [
+                'id'     => $menu->term_id,
+                'name'   => $menu->name,
+                'type'   => 'classic',
+                'items'  => [],
+            ];
+            foreach ( $items as $item ) {
+                $menu_data['items'][] = [
+                    'id'    => $item->ID,
+                    'title' => $item->title,
+                    'url'   => $item->url,
+                    'type'  => $item->type,
+                ];
+            }
+            $result[] = $menu_data;
+        }
+
+        // Menu block-based (wp_navigation post type — temi FSE)
+        $nav_posts = get_posts( [ 'post_type' => 'wp_navigation', 'post_status' => 'publish', 'posts_per_page' => -1 ] );
+        foreach ( $nav_posts as $nav ) {
+            $result[] = [
+                'id'     => $nav->ID,
+                'name'   => $nav->post_title,
+                'type'   => 'block',
+                'content' => $nav->post_content,
+            ];
+        }
+
+        if ( empty( $result ) ) {
+            return [ 'success' => true, 'message' => 'Nessun menu trovato.', 'menus' => [] ];
+        }
+
+        return [ 'success' => true, 'menus' => $result ];
+    }
+
+    private static function tool_add_menu_item( array $args ): array {
+        $menu_id = (int) $args['menu_id'];
+        $title   = sanitize_text_field( $args['title'] ?? '' );
+
+        if ( ! wp_get_nav_menu_object( $menu_id ) ) {
+            return [ 'error' => "Menu con ID $menu_id non trovato." ];
+        }
+
+        $item_data = [
+            'menu-item-title'  => $title,
+            'menu-item-status' => 'publish',
+        ];
+
+        if ( ! empty( $args['page_id'] ) ) {
+            $post = get_post( (int) $args['page_id'] );
+            if ( ! $post ) return [ 'error' => "Post/pagina con ID {$args['page_id']} non trovato." ];
+            $item_data['menu-item-object-id'] = $post->ID;
+            $item_data['menu-item-object']    = $post->post_type;
+            $item_data['menu-item-type']      = 'post_type';
+        } elseif ( ! empty( $args['url'] ) ) {
+            $item_data['menu-item-url']  = esc_url_raw( $args['url'] );
+            $item_data['menu-item-type'] = 'custom';
+        } else {
+            return [ 'error' => 'Specifica un page_id o un url per la voce di menu.' ];
+        }
+
+        $item_id = wp_update_nav_menu_item( $menu_id, 0, $item_data );
+
+        if ( is_wp_error( $item_id ) ) {
+            return [ 'error' => $item_id->get_error_message() ];
+        }
+
+        return [
+            'success' => true,
+            'item_id' => $item_id,
+            'message' => "Voce \"$title\" aggiunta al menu (ID voce: $item_id).",
+        ];
     }
 }
