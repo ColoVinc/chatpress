@@ -27,6 +27,7 @@
                                         <option value="gemini" <?php selected( get_option('sitegenie_default_provider', 'gemini'), 'gemini' ); ?>>Google Gemini</option>
                                         <option value="openai" <?php selected( get_option('sitegenie_default_provider', 'gemini'), 'openai' ); ?>>OpenAI (GPT)</option>
                                         <option value="claude" <?php selected( get_option('sitegenie_default_provider', 'gemini'), 'claude' ); ?>>Anthropic Claude</option>
+                                        <option value="groq" <?php selected( get_option('sitegenie_default_provider', 'gemini'), 'groq' ); ?>>Groq (gratuito)</option>
                                     </select>
                                 </td>
                             </tr>
@@ -97,6 +98,30 @@
                                         <select name="sitegenie_claude_model">
                                             <?php foreach ( SiteGenie_Claude::get_models() as $sitegenie_value => $sitegenie_label ) : ?>
                                                 <option value="<?php echo esc_attr($sitegenie_value); ?>" <?php selected( get_option('sitegenie_claude_model', 'claude-sonnet-4-6'), $sitegenie_value ); ?>><?php echo esc_html($sitegenie_label); ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Groq -->
+                        <div id="sitegenie-provider-groq" class="sitegenie-provider-section" style="display:none;">
+                            <table class="form-table">
+                                <tr>
+                                    <th><?php esc_html_e( 'API Key Groq', 'sitegenie' ); ?></th>
+                                    <td>
+                                        <input type="password" name="sitegenie_groq_api_key" value="<?php echo esc_attr( get_option('sitegenie_groq_api_key') ); ?>" class="regular-text" placeholder="gsk_..." />
+                                        <?php // translators: %s is a link to Groq Console ?>
+                                        <p class="description"><?php echo wp_kses( sprintf( __( 'Ottieni la tua chiave gratuita su %s', 'sitegenie' ), '<a href="https://console.groq.com/keys" target="_blank">Groq Console</a>' ), [ 'a' => [ 'href' => [], 'target' => [] ] ] ); ?></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th><?php esc_html_e( 'Modello Groq', 'sitegenie' ); ?></th>
+                                    <td>
+                                        <select name="sitegenie_groq_model">
+                                            <?php foreach ( SiteGenie_Groq::get_models() as $sitegenie_value => $sitegenie_label ) : ?>
+                                                <option value="<?php echo esc_attr($sitegenie_value); ?>" <?php selected( get_option('sitegenie_groq_model', 'llama-3.3-70b-versatile'), $sitegenie_value ); ?>><?php echo esc_html($sitegenie_label); ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </td>
