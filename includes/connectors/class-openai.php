@@ -8,6 +8,14 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
 
     private $api_base = 'https://api.openai.com/v1/chat/completions';
 
+    protected function get_api_base(): string {
+        return $this->api_base;
+    }
+
+    protected function get_provider_name(): string {
+        return 'openai';
+    }
+
     public function generate( string $prompt, array $options = [] ): array {
         if ( empty( $this->api_key ) ) {
             return $this->format_error( 'API key OpenAI non configurata.' );
@@ -20,10 +28,10 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
             'temperature' => $options['temperature'] ?? 0.7,
         ];
 
-        $response = $this->http_post( $this->api_base, $body, $this->auth_headers() );
+        $response = $this->http_post( $this->get_api_base(), $body, $this->auth_headers() );
 
         if ( ! $response['success'] ) {
-            SiteGenie_Logger::log( 'openai', 0, 0, 'error', $response['error'] );
+            SiteGenie_Logger::log( $this->get_provider_name(), 0, 0, 'error', $response['error'] );
             return $this->format_error( $response['error'], $response['code'] );
         }
 
@@ -31,13 +39,13 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
         $text = $data['choices'][0]['message']['content'] ?? '';
 
         if ( empty( $text ) ) {
-            SiteGenie_Logger::log( 'openai', 0, 0, 'error', 'Risposta vuota.' );
+            SiteGenie_Logger::log( $this->get_provider_name(), 0, 0, 'error', 'Risposta vuota.' );
             return $this->format_error( 'Risposta vuota da OpenAI.' );
         }
 
         $pt = $data['usage']['prompt_tokens']     ?? 0;
         $ct = $data['usage']['completion_tokens'] ?? 0;
-        SiteGenie_Logger::log( 'openai', $pt, $ct, 'success' );
+        SiteGenie_Logger::log( $this->get_provider_name(), $pt, $ct, 'success' );
 
         return $this->format_response( $text, $pt, $ct );
     }
@@ -72,10 +80,10 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
 
         for ( $turn = 0; $turn < $max_turns; $turn++ ) {
             $body['messages'] = $messages;
-            $response = $this->http_post( $this->api_base, $body, $this->auth_headers() );
+            $response = $this->http_post( $this->get_api_base(), $body, $this->auth_headers() );
 
             if ( ! $response['success'] ) {
-                SiteGenie_Logger::log( 'openai', $total_pt, $total_ct, 'error', $response['error'] );
+                SiteGenie_Logger::log( $this->get_provider_name(), $total_pt, $total_ct, 'error', $response['error'] );
                 return $this->format_error( $response['error'], $response['code'] );
             }
 
@@ -88,7 +96,7 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
             // Nessun tool call
             if ( empty( $msg['tool_calls'] ) ) {
                 $text = $msg['content'] ?? 'Operazione completata.';
-                SiteGenie_Logger::log( 'openai', $total_pt, $total_ct, 'success' );
+                SiteGenie_Logger::log( $this->get_provider_name(), $total_pt, $total_ct, 'success' );
                 $result = $this->format_response( $text, $total_pt, $total_ct );
                 if ( $last_action ) $result['action_taken'] = $last_action;
                 return $result;
@@ -114,7 +122,7 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
         }
 
         $fallback = $last_action['result']['message'] ?? 'Operazione completata.';
-        SiteGenie_Logger::log( 'openai', $total_pt, $total_ct, 'success' );
+        SiteGenie_Logger::log( $this->get_provider_name(), $total_pt, $total_ct, 'success' );
         $result = $this->format_response( $fallback, $total_pt, $total_ct );
         if ( $last_action ) $result['action_taken'] = $last_action;
         return $result;
@@ -172,7 +180,7 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
         $total_pt = 0;
         $total_ct = 0;
 
-        $this->http_stream( $this->api_base, $body, $this->auth_headers(), function( $line ) use ( &$total_pt, &$total_ct ) {
+        $this->http_stream( $this->get_api_base(), $body, $this->auth_headers(), function( $line ) use ( &$total_pt, &$total_ct ) {
             $line = trim( $line );
             if ( strpos( $line, 'data: ' ) !== 0 ) return;
             $payload = substr( $line, 6 );
@@ -191,7 +199,7 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
             }
         });
 
-        SiteGenie_Logger::log( 'openai', $total_pt, $total_ct, 'success' );
+        SiteGenie_Logger::log( $this->get_provider_name(), $total_pt, $total_ct, 'success' );
         echo "data: [DONE]\n\n";
     }
 
