@@ -62,6 +62,20 @@ jQuery(function ($) {
     });
 
 
+    // Mostra dettaglio errore nei log
+    $(document).on('click', '.sitegenie-log-error', function () {
+        var msg = $(this).data('error') || 'Errore sconosciuto';
+        var $modal = $('<div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999999;display:flex;align-items:center;justify-content:center;">'
+            + '<div style="background:#fff;border-radius:8px;padding:24px;max-width:500px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.2);">'
+            + '<h3 style="margin:0 0 12px;font-size:15px;color:#d63638;"><i class="fa-solid fa-circle-exclamation"></i> Dettaglio Errore</h3>'
+            + '<p style="margin:0 0 16px;font-size:13px;color:#333;word-break:break-word;">' + $('<span>').text(msg).html() + '</p>'
+            + '<button style="background:#0f3460;color:#fff;border:0;padding:6px 16px;border-radius:4px;cursor:pointer;font-size:13px;">Chiudi</button>'
+            + '</div></div>');
+        $modal.on('click', 'button', function () { $modal.remove(); });
+        $modal.on('click', function (e) { if (e.target === this) $modal.remove(); });
+        $('body').append($modal);
+    });
+
     // ── Knowledge Base ───────────────────────────────────────────
 
     // Carica file .txt nel textarea
