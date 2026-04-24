@@ -12,6 +12,7 @@ SiteGenie integrates artificial intelligence directly into the WordPress admin p
 
 - **AI Chat with streaming** — Floating widget on every admin page with real-time token-by-token responses, markdown rendering, and conversation history
 - **Agentic function calling** — The AI can create, edit and delete posts, pages, Custom Post Types, comments, users, products, menu items and site settings autonomously
+- **Component generator** — Ask the AI to create custom widgets/modules for your page builder (WPBakery, Elementor) directly from the chat, with sandbox protection and error handling
 - **Content generation** — Metabox in the post editor to generate article drafts and SEO meta (title, description, excerpt)
 - **Content analysis** — Ask the AI to analyze your existing posts and suggest improvements for SEO, readability and brand consistency
 - **Knowledge base** — Upload documents (TXT) as custom context for the AI, with FULLTEXT search and automatic chunking
@@ -26,6 +27,21 @@ SiteGenie integrates artificial intelligence directly into the WordPress admin p
 - **Toast notifications** — Visual feedback when the AI performs actions, with direct links to the editor
 - **Rate limiting** — Configurable per-user hourly request limit
 - **Auto-cleanup** — Daily cron job to automatically delete old conversations
+
+## 🧩 Component Generator
+
+SiteGenie can generate custom widgets/modules for your page builder directly from the chat:
+
+1. Ask the AI to create a component (e.g. "Create a hero section with title and background image for WPBakery")
+2. The AI generates the PHP, CSS and JS code following the editor's documentation
+3. The component is saved in `components/` and appears in **SiteGenie → Components**
+4. The component is automatically available in your page builder's widget panel
+5. If a component causes an error, it's automatically deactivated (sandbox protection)
+6. Emergency URL: `yoursite.com/?sitegenie_safe_mode=1` deactivates all components
+
+Supported editors: **WPBakery**, **Elementor** (more coming soon)
+
+> For best results with component generation, use Google Gemini, OpenAI or Anthropic Claude. Free models (Groq) may generate incomplete components.
 
 ## 🧠 Available AI Tools
 
@@ -51,6 +67,7 @@ The AI assistant can execute these actions on your WordPress site:
 | `create_user` | Create a new user (admin role blocked for security) |
 | `get_menus` | List navigation menus with items |
 | `add_menu_item` | Add a page or custom link to a menu |
+| `create_component` | Generate a page builder widget/module from description |
 | `get_products` | List WooCommerce products *(only if WooCommerce is active)* |
 | `create_product` | Create a simple WooCommerce product *(only if WooCommerce is active)* |
 | `get_orders` | List WooCommerce orders *(only if WooCommerce is active)* |
@@ -136,10 +153,11 @@ sitegenie/
 ├── includes/
 │   ├── class-core.php             # Core singleton, hooks, auto-reindex on save
 │   ├── class-api-connector.php    # Abstract base class for AI providers
-│   ├── class-tools.php            # 21 tool declarations and execution engine
+│   ├── class-tools.php            # 22 tool declarations and execution engine
 │   ├── class-history.php          # Conversation and message CRUD
 │   ├── class-logger.php           # API call logging, stats, daily/provider aggregation
 │   ├── class-knowledge.php        # Knowledge base: documents, chunking, FULLTEXT search, RAG
+│   ├── class-components.php       # Component generator: sandbox loader, CRUD, safe mode
 │   └── connectors/
 │       ├── class-gemini.php       # Google Gemini (with thought signatures support)
 │       ├── class-openai.php       # OpenAI GPT (base for OpenAI-compatible providers)
@@ -154,13 +172,18 @@ sitegenie/
 │   ├── chat-widget.php            # Chat widget HTML (no Bootstrap dependency)
 │   ├── metabox.php                # Metabox HTML
 │   ├── logs-page.php              # Logs page with Chart.js dashboard
-│   └── knowledge-page.php         # Knowledge base management + RAG indexing
+│   ├── knowledge-page.php         # Knowledge base management + RAG indexing
+│   └── components-page.php        # Component management with toggle, delete, safe mode
+├── docs/
+│   ├── wpbakery.md                # WPBakery module documentation (preloaded in KB)
+│   └── elementor.md               # Elementor widget documentation (preloaded in KB)
+├── components/                    # AI-generated components (auto-created)
 └── assets/
     ├── css/
     │   ├── admin.css              # Admin pages styles
     │   └── chat.css               # Chat widget styles (self-contained, no Bootstrap)
     └── js/
-        ├── admin.js               # Settings, knowledge base, RAG indexing logic
+        ├── admin.js               # Settings, knowledge base, RAG, components logic
         ├── chat.js                # Chat widget with SSE streaming + markdown
         ├── metabox.js             # Metabox (Gutenberg + Classic Editor)
         └── media-alt.js           # Alt text generation in media library
@@ -168,7 +191,7 @@ sitegenie/
 
 ## 🗄️ Database
 
-The plugin creates 4 custom tables on activation:
+The plugin creates 5 custom tables on activation:
 
 | Table | Purpose |
 |-------|---------|
@@ -176,6 +199,7 @@ The plugin creates 4 custom tables on activation:
 | `wp_sitegenie_messages` | Individual messages (role: user/model) |
 | `wp_sitegenie_logs` | API call logs with token counts |
 | `wp_sitegenie_knowledge` | Knowledge base chunks with FULLTEXT index |
+| `wp_sitegenie_components` | Component metadata (slug, name, editor, status) |
 
 All tables are automatically removed when the plugin is deleted (not deactivated).
 
@@ -189,6 +213,8 @@ All tables are automatically removed when the plugin is deleted (not deactivated
 - Administrator user creation blocked via chat for safety
 - API keys stored in `wp_options`, never hardcoded
 - Thought signatures support for Gemini 3 models
+- Component sandbox: auto-deactivation on PHP errors
+- Emergency safe mode URL to disable all components
 
 ## 📋 Requirements
 
