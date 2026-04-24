@@ -29,6 +29,9 @@ class SiteGenie_Core {
             SiteGenie_Metabox::get_instance();
             SiteGenie_Chat::get_instance();
         }
+
+        // Carica componenti attivi (frontend + backend)
+        SiteGenie_Components::load_active();
     }
 
     public function run_cleanup() {
