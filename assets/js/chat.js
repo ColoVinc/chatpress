@@ -45,6 +45,7 @@ jQuery(function ($) {
         get_orders:             '📦 Ordini recuperati',
         get_menus:              '📋 Menu recuperati',
         add_menu_item:          '➕ Voce menu aggiunta',
+        create_component:       '🧩 Componente creato',
     };
 
     restoreSession();
