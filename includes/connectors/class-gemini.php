@@ -157,7 +157,7 @@ class SiteGenie_Gemini extends SiteGenie_API_Connector {
             $tool_result = SiteGenie_Tools::execute( $tool_name, $tool_args );
 
             // Tieni traccia dell'ultima azione "mutativa"
-            if ( in_array( $tool_name, [ 'create_post', 'update_post', 'delete_post', 'create_custom_post', 'update_custom_post', 'moderate_comment', 'reply_comment', 'update_site_settings', 'create_user', 'create_product', 'add_menu_item' ] ) ) {
+            if ( in_array( $tool_name, [ 'create_post', 'update_post', 'delete_post', 'create_custom_post', 'update_custom_post', 'moderate_comment', 'reply_comment', 'update_site_settings', 'create_user', 'create_product', 'add_menu_item', 'create_component' ] ) ) {
                 $last_action = [ 'tool' => $tool_name, 'result' => $tool_result ];
             }
 
