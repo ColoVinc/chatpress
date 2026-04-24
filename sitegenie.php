@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Costanti del plugin
-define( 'SITEGENIE_VERSION', '0.3.0' );
+define( 'SITEGENIE_VERSION', '0.4.0' );
 define( 'SITEGENIE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SITEGENIE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'SITEGENIE_PLUGIN_FILE', __FILE__ );
@@ -44,6 +44,7 @@ spl_autoload_register( function( $class ) {
         'SiteGenie_Chat'          => SITEGENIE_PLUGIN_DIR . 'admin/class-chat.php',
         'SiteGenie_Tools'         => SITEGENIE_PLUGIN_DIR . 'includes/class-tools.php',
         'SiteGenie_Knowledge'     => SITEGENIE_PLUGIN_DIR . 'includes/class-knowledge.php',
+        'SiteGenie_Components'    => SITEGENIE_PLUGIN_DIR . 'includes/class-components.php',
     ];
 
     if ( isset( $map[$class] ) && file_exists( $map[$class] ) ) {
@@ -76,10 +77,24 @@ function sitegenie_check_version() {
     $installed = get_option( 'sitegenie_version', '0' );
     if ( version_compare( $installed, SITEGENIE_VERSION, '<' ) ) {
         sitegenie_create_tables();
+        sitegenie_preload_docs();
         update_option( 'sitegenie_version', SITEGENIE_VERSION );
     }
 }
 add_action( 'plugins_loaded', 'sitegenie_check_version', 5 );
+
+function sitegenie_preload_docs() {
+    $docs_dir = SITEGENIE_PLUGIN_DIR . 'docs/';
+    if ( ! is_dir( $docs_dir ) ) return;
+
+    foreach ( glob( $docs_dir . '*.md' ) as $file ) {
+        $name    = 'doc:' . basename( $file, '.md' );
+        $content = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+        if ( $content ) {
+            SiteGenie_Knowledge::add_document( $name, $content );
+        }
+    }
+}
 
 function sitegenie_create_tables() {
     global $wpdb;
@@ -130,6 +145,19 @@ function sitegenie_create_tables() {
         PRIMARY KEY (id),
         KEY doc_name (doc_name),
         FULLTEXT KEY content_ft (content)
+    ) $charset;" );
+
+    // Tabella componenti
+    dbDelta( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}sitegenie_components (
+        id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+        slug VARCHAR(100) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        editor VARCHAR(50) NOT NULL,
+        status VARCHAR(20) NOT NULL DEFAULT 'active',
+        error_message TEXT NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY slug (slug)
     ) $charset;" );
 }
 
