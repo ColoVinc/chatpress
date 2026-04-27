@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name: Jeenie – AI for WordPress
+ * Plugin Name: Jeenie – AI Assistant
  * Plugin URI:  https://github.com/ColoVinc/jeenie
- * Description: AI Assistant for WordPress — Agentic chat, content generation, ACF/CPT support with Gemini, OpenAI, Claude and Groq.
+ * Description: AI Assistant — Agentic chat, content generation, ACF/CPT support with Gemini, OpenAI, Claude and Groq.
  * Version:     0.1.0
  * Author:      Vincenzo Colonna
  * Author URI:  https://github.com/ColoVinc
  * License:     GPL-2.0+
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: jeenie-ai-assistant
+ * Text Domain: jeenie
  * Domain Path: /languages
  * Requires at least: 5.8
  * Requires PHP: 7.4
