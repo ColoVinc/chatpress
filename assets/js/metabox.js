@@ -1,31 +1,31 @@
 jQuery(function ($) {
 
     // Gestione tab
-    $('.sitegenie-tab').on('click', function () {
+    $('.jeenie-tab').on('click', function () {
         const tab = $(this).data('tab');
-        $('.sitegenie-tab').removeClass('active');
-        $('.sitegenie-tab-content').removeClass('active');
+        $('.jeenie-tab').removeClass('active');
+        $('.jeenie-tab-content').removeClass('active');
         $(this).addClass('active');
-        $('#sitegenie-tab-' + tab).addClass('active');
+        $('#jeenie-tab-' + tab).addClass('active');
     });
 
-    function showLoading()  { $('#sitegenie-loading').show(); $('#sitegenie-error').hide(); }
-    function hideLoading()  { $('#sitegenie-loading').hide(); }
-    function showError(msg) { $('#sitegenie-error').text(msg).show(); }
+    function showLoading()  { $('#jeenie-loading').show(); $('#jeenie-error').hide(); }
+    function hideLoading()  { $('#jeenie-loading').hide(); }
+    function showError(msg) { $('#jeenie-error').text(msg).show(); }
 
     // GENERA CONTENUTO
-    $('#sitegenie-generate-content').on('click', function () {
+    $('#jeenie-generate-content').on('click', function () {
         const title    = $('#title').val() || $('input[name="post_title"]').val() || '';
-        const keywords = $('#sitegenie-keywords').val();
+        const keywords = $('#jeenie-keywords').val();
 
         if (!title) { showError('Inserisci prima il titolo del post.'); return; }
 
         showLoading();
-        $('#sitegenie-content-result').hide();
+        $('#jeenie-content-result').hide();
 
-        $.post(sitegenie.ajax_url, {
-            action:   'sitegenie_generate_content',
-            nonce:    sitegenie.nonce,
+        $.post(jeenie.ajax_url, {
+            action:   'jeenie_generate_content',
+            nonce:    jeenie.nonce,
             title:    title,
             keywords: keywords,
             type:     $('#post_type').val() || 'post',
@@ -33,8 +33,8 @@ jQuery(function ($) {
         .done(function (res) {
             hideLoading();
             if (res.success) {
-                $('#sitegenie-content-result .sitegenie-result-text').text(res.data.text);
-                $('#sitegenie-content-result').show();
+                $('#jeenie-content-result .jeenie-result-text').text(res.data.text);
+                $('#jeenie-content-result').show();
             } else {
                 showError(res.data);
             }
@@ -43,8 +43,8 @@ jQuery(function ($) {
     });
 
     // COPIA CONTENUTO GENERATO
-    $(document).on('click', '.sitegenie-copy-content', function () {
-        var text = $('#sitegenie-content-result .sitegenie-result-text').text();
+    $(document).on('click', '.jeenie-copy-content', function () {
+        var text = $('#jeenie-content-result .jeenie-result-text').text();
         if (!text) return;
 
         // Copia con fallback per HTTP
@@ -71,8 +71,8 @@ jQuery(function ($) {
     });
 
     // INSERISCI CONTENUTO NELL'EDITOR
-    $(document).on('click', '.sitegenie-insert-content', function () {
-        const text = $('#sitegenie-content-result .sitegenie-result-text').text();
+    $(document).on('click', '.jeenie-insert-content', function () {
+        const text = $('#jeenie-content-result .jeenie-result-text').text();
         if (!text) return;
 
         // Editor classico (TinyMCE) — controlla per primo
@@ -90,18 +90,18 @@ jQuery(function ($) {
     });
 
     // GENERA SEO
-    $('#sitegenie-generate-seo').on('click', function () {
+    $('#jeenie-generate-seo').on('click', function () {
         const title   = $('#title').val() || '';
         const content = typeof wp !== 'undefined' && wp.data
             ? (wp.data.select('core/block-editor').getBlocks().map(b => b.attributes.content || '').join(' '))
             : (tinyMCE && tinyMCE.activeEditor ? tinyMCE.activeEditor.getContent({ format: 'text' }) : '');
 
         showLoading();
-        $('#sitegenie-seo-result').hide();
+        $('#jeenie-seo-result').hide();
 
-        $.post(sitegenie.ajax_url, {
-            action:  'sitegenie_generate_seo',
-            nonce:   sitegenie.nonce,
+        $.post(jeenie.ajax_url, {
+            action:  'jeenie_generate_seo',
+            nonce:   jeenie.nonce,
             title:   title,
             content: content.substring(0, 1000),
         })
@@ -109,12 +109,12 @@ jQuery(function ($) {
             hideLoading();
             if (res.success) {
                 const d = res.data;
-                $('#sitegenie-meta-title').val(d.meta_title || '');
-                $('#sitegenie-meta-description').val(d.meta_description || '');
-                $('#sitegenie-excerpt').val(d.excerpt || '');
-                updateCharCount('#sitegenie-meta-title', 60);
-                updateCharCount('#sitegenie-meta-description', 155);
-                $('#sitegenie-seo-result').show();
+                $('#jeenie-meta-title').val(d.meta_title || '');
+                $('#jeenie-meta-description').val(d.meta_description || '');
+                $('#jeenie-excerpt').val(d.excerpt || '');
+                updateCharCount('#jeenie-meta-title', 60);
+                updateCharCount('#jeenie-meta-description', 155);
+                $('#jeenie-seo-result').show();
             } else {
                 showError(res.data);
             }
@@ -126,17 +126,17 @@ jQuery(function ($) {
     function updateCharCount(selector, max) {
         const $el = $(selector);
         const len = $el.val().length;
-        const $count = $el.closest('.sitegenie-seo-field').find('.sitegenie-char-count');
+        const $count = $el.closest('.jeenie-seo-field').find('.jeenie-char-count');
         const color = len > max ? '#d63638' : (len > max * 0.85 ? '#dba617' : '#00a32a');
         $count.text(len + '/' + max + ' caratteri').css('color', color);
     }
 
-    $('#sitegenie-meta-title').on('input', function () { updateCharCount('#sitegenie-meta-title', 60); });
-    $('#sitegenie-meta-description').on('input', function () { updateCharCount('#sitegenie-meta-description', 155); });
+    $('#jeenie-meta-title').on('input', function () { updateCharCount('#jeenie-meta-title', 60); });
+    $('#jeenie-meta-description').on('input', function () { updateCharCount('#jeenie-meta-description', 155); });
 
     // Inserisci excerpt
-    $(document).on('click', '.sitegenie-insert-excerpt', function () {
-        const text = $('#sitegenie-excerpt').val();
+    $(document).on('click', '.jeenie-insert-excerpt', function () {
+        const text = $('#jeenie-excerpt').val();
         if (text && $('#excerpt').length) {
             $('#excerpt').val(text);
         }
