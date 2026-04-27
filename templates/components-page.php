@@ -2,19 +2,19 @@
 <div class="wrap jeenie-settings">
 
     <div class="jeenie-header rounded-3 mb-4 d-flex align-items-center gap-3 p-4">
-        <h1 class="text-white m-0 fs-4"><i class="fa-solid fa-puzzle-piece"></i> <?php esc_html_e( 'Jeenie — Componenti', 'jeenie-ai-assistant' ); ?></h1>
+        <h1 class="text-white m-0 fs-4"><i class="fa-solid fa-puzzle-piece"></i> <?php esc_html_e( 'Jeenie — Componenti', 'jeenie' ); ?></h1>
     </div>
 
     <div class="alert alert-info small mb-4" style="border-left:4px solid #0f3460;background:#f0f4ff;padding:12px 16px;border-radius:4px;">
         <i class="fa-solid fa-circle-info"></i>
-        <?php esc_html_e( 'Per la generazione dei componenti si consiglia di utilizzare i modelli di Google Gemini, Anthropic Claude o OpenAI per ottenere risultati migliori. I modelli gratuiti (Groq) potrebbero generare componenti incompleti o con errori.', 'jeenie-ai-assistant' ); ?>
+        <?php esc_html_e( 'Per la generazione dei componenti si consiglia di utilizzare i modelli di Google Gemini, Anthropic Claude o OpenAI per ottenere risultati migliori. I modelli gratuiti (Groq) potrebbero generare componenti incompleti o con errori.', 'jeenie' ); ?>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <p class="text-muted small m-0"><?php esc_html_e( 'Componenti generati dall\'AI per il tuo page builder. Chiedi nella chat di creare un componente.', 'jeenie-ai-assistant' ); ?></p>
+        <p class="text-muted small m-0"><?php esc_html_e( 'Componenti generati dall\'AI per il tuo page builder. Chiedi nella chat di creare un componente.', 'jeenie' ); ?></p>
         <?php if ( ! empty( $components ) ) : ?>
             <button type="button" id="jeenie-deactivate-all" class="btn btn-outline-danger btn-sm">
-                <i class="fa-solid fa-power-off"></i> <?php esc_html_e( 'Disattiva Tutti', 'jeenie-ai-assistant' ); ?>
+                <i class="fa-solid fa-power-off"></i> <?php esc_html_e( 'Disattiva Tutti', 'jeenie' ); ?>
             </button>
         <?php endif; ?>
     </div>
@@ -23,8 +23,8 @@
         <div class="card">
             <div class="card-body text-center py-5">
                 <i class="fa-solid fa-puzzle-piece" style="font-size:48px;color:#ccc;"></i>
-                <p class="mt-3 text-muted"><?php esc_html_e( 'Nessun componente creato. Chiedi all\'AI nella chat di creare un componente per il tuo editor.', 'jeenie-ai-assistant' ); ?></p>
-                <p class="text-muted small"><?php esc_html_e( 'Esempio: "Crea un componente hero con titolo e immagine di sfondo per WPBakery"', 'jeenie-ai-assistant' ); ?></p>
+                <p class="mt-3 text-muted"><?php esc_html_e( 'Nessun componente creato. Chiedi all\'AI nella chat di creare un componente per il tuo editor.', 'jeenie' ); ?></p>
+                <p class="text-muted small"><?php esc_html_e( 'Esempio: "Crea un componente hero con titolo e immagine di sfondo per WPBakery"', 'jeenie' ); ?></p>
             </div>
         </div>
     <?php else : ?>
@@ -33,10 +33,10 @@
                 <table class="table table-striped table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th><?php esc_html_e( 'Componente', 'jeenie-ai-assistant' ); ?></th>
-                            <th><?php esc_html_e( 'Editor', 'jeenie-ai-assistant' ); ?></th>
-                            <th><?php esc_html_e( 'Stato', 'jeenie-ai-assistant' ); ?></th>
-                            <th><?php esc_html_e( 'Data', 'jeenie-ai-assistant' ); ?></th>
+                            <th><?php esc_html_e( 'Componente', 'jeenie' ); ?></th>
+                            <th><?php esc_html_e( 'Editor', 'jeenie' ); ?></th>
+                            <th><?php esc_html_e( 'Stato', 'jeenie' ); ?></th>
+                            <th><?php esc_html_e( 'Data', 'jeenie' ); ?></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -56,11 +56,11 @@
                                 </td>
                                 <td>
                                     <?php if ( $jeenie_comp['status'] === 'active' ) : ?>
-                                        <span class="badge bg-success"><i class="fa-solid fa-check"></i> <?php esc_html_e( 'Attivo', 'jeenie-ai-assistant' ); ?></span>
+                                        <span class="badge bg-success"><i class="fa-solid fa-check"></i> <?php esc_html_e( 'Attivo', 'jeenie' ); ?></span>
                                     <?php elseif ( $jeenie_comp['status'] === 'error' ) : ?>
-                                        <span class="badge bg-danger jeenie-comp-error" style="cursor:pointer;" data-error="<?php echo esc_attr( $jeenie_comp['error_message'] ); ?>"><i class="fa-solid fa-xmark"></i> <?php esc_html_e( 'Errore', 'jeenie-ai-assistant' ); ?></span>
+                                        <span class="badge bg-danger jeenie-comp-error" style="cursor:pointer;" data-error="<?php echo esc_attr( $jeenie_comp['error_message'] ); ?>"><i class="fa-solid fa-xmark"></i> <?php esc_html_e( 'Errore', 'jeenie' ); ?></span>
                                     <?php else : ?>
-                                        <span class="badge bg-secondary"><i class="fa-solid fa-pause"></i> <?php esc_html_e( 'Disattivato', 'jeenie-ai-assistant' ); ?></span>
+                                        <span class="badge bg-secondary"><i class="fa-solid fa-pause"></i> <?php esc_html_e( 'Disattivato', 'jeenie' ); ?></span>
                                     <?php endif; ?>
                                 </td>
                                 <td><?php echo esc_html( $jeenie_comp['created_at'] ); ?></td>
@@ -87,7 +87,7 @@
 
         <p class="text-muted small mt-3">
             <i class="fa-solid fa-circle-info"></i>
-            <?php esc_html_e( 'URL di emergenza per disattivare tutti i componenti:', 'jeenie-ai-assistant' ); ?>
+            <?php esc_html_e( 'URL di emergenza per disattivare tutti i componenti:', 'jeenie' ); ?>
             <code><?php echo esc_url( home_url( '/?jeenie_safe_mode=1' ) ); ?></code>
         </p>
     <?php endif; ?>
