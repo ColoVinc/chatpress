@@ -2,12 +2,12 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * SiteGenie_Tools
+ * Jeenie_Tools
  *
  * Definisce i tool che Gemini può chiamare (function declarations)
  * ed esegue le funzioni WordPress corrispondenti.
  */
-class SiteGenie_Tools {
+class Jeenie_Tools {
 
     /**
      * Restituisce le dichiarazioni dei tool da passare all'API Gemini.
@@ -1130,10 +1130,10 @@ class SiteGenie_Tools {
         }
 
         // Recupera la documentazione dell'editor dalla knowledge base
-        $kb_docs = SiteGenie_Knowledge::search( "Regole moduli $editor widget", 3000 );
+        $kb_docs = Jeenie_Knowledge::search( "Regole moduli $editor widget", 3000 );
 
         // Genera il codice con una chiamata API dedicata (senza tool calling)
-        $connector = SiteGenie_Admin::get_connector();
+        $connector = Jeenie_Admin::get_connector();
         if ( ! $connector ) return [ 'error' => 'Connettore AI non disponibile.' ];
 
         $prompt  = "Genera il codice completo per un componente $editor per WordPress.\n\n";
@@ -1150,14 +1150,14 @@ class SiteGenie_Tools {
         if ( $editor === 'elementor' ) {
             $prompt .= "4. Il widget DEVE estendere \\Elementor\\Widget_Base con i metodi get_name(), get_title(), get_icon(), get_categories(), register_controls(), render()\n";
             $prompt .= "5. Registra il widget con add_action('elementor/widgets/register', ...)\n";
-            $prompt .= "6. Registra la categoria 'sitegenie-components' con add_action('elementor/elements/categories_registered', ...)\n";
+            $prompt .= "6. Registra la categoria 'jeenie-components' con add_action('elementor/elements/categories_registered', ...)\n";
             $prompt .= "7. NON usare vc_map, add_shortcode o qualsiasi funzione di WPBakery\n";
         } elseif ( $editor === 'wpbakery' ) {
             $prompt .= "4. Il PHP DEVE seguire la struttura della documentazione: classe con costruttore, add_shortcode, add_action vc_before_init, funzione map con vc_map, funzione render HTML\n";
             $prompt .= "5. Il PHP deve iniziare con il check if (!class_exists('WPBakeryShortCodesContainer')) return;\n";
             $prompt .= "6. NON usare \\Elementor\\Widget_Base o qualsiasi classe di Elementor\n";
         }
-        $prompt .= "8. La categoria nel page builder deve essere 'Sitegenie components' (WPBakery) o 'sitegenie-components' (Elementor)\n";
+        $prompt .= "8. La categoria nel page builder deve essere 'Jeenie components' (WPBakery) o 'jeenie-components' (Elementor)\n";
         $prompt .= "9. Gli asset CSS/JS vanno registrati con wp_register_style/wp_register_script e caricati nel render con wp_enqueue_style/wp_enqueue_script\n";
         $prompt .= "10. Il percorso degli asset è: plugins_url('assets/css/$slug.css', __FILE__) e plugins_url('assets/js/$slug.js', __FILE__)\n";
         $prompt .= "11. NON mischiare CSS o JS dentro il file PHP — vanno nei file separati dopo i marcatori ===CSS=== e ===JS===\n";
@@ -1196,6 +1196,6 @@ class SiteGenie_Tools {
             $php_code = "<?php\n" . $php_code;
         }
 
-        return SiteGenie_Components::create( $slug, $name, $editor, $php_code, $css_code, $js_code );
+        return Jeenie_Components::create( $slug, $name, $editor, $php_code, $css_code, $js_code );
     }
 }
