@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Classe Metabox — aggiunge il pannello AI nell'editor post/pagina
  */
-class SiteGenie_Metabox {
+class Jeenie_Metabox {
 
     private static $instance = null;
 
@@ -18,16 +18,16 @@ class SiteGenie_Metabox {
     private function __construct() {
         add_action( 'add_meta_boxes', [ $this, 'register_metabox' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
-        add_action( 'wp_ajax_sitegenie_generate_content', [ $this, 'ajax_generate_content' ] );
-        add_action( 'wp_ajax_sitegenie_generate_seo', [ $this, 'ajax_generate_seo' ] );
+        add_action( 'wp_ajax_jeenie_generate_content', [ $this, 'ajax_generate_content' ] );
+        add_action( 'wp_ajax_jeenie_generate_seo', [ $this, 'ajax_generate_seo' ] );
     }
 
     public function register_metabox() {
         $screens = get_post_types( [ 'public' => true ], 'names' );
         foreach ( $screens as $screen ) {
             add_meta_box(
-                'sitegenie_metabox',
-                '🤖 SiteGenie — Assistente AI',
+                'jeenie_metabox',
+                '🤖 Jeenie — Assistente AI',
                 [ $this, 'render_metabox' ],
                 $screen,
                 'side',
@@ -40,28 +40,28 @@ class SiteGenie_Metabox {
         if ( ! in_array( $hook, [ 'post.php', 'post-new.php' ] ) ) return;
 
         wp_enqueue_script(
-            'sitegenie-metabox',
-            SITEGENIE_PLUGIN_URL . 'assets/js/metabox.js',
+            'jeenie-metabox',
+            JEENIE_PLUGIN_URL . 'assets/js/metabox.js',
             [ 'jquery', 'wp-blocks', 'wp-data', 'wp-block-editor' ],
-            SITEGENIE_VERSION,
+            JEENIE_VERSION,
             true
         );
 
-        wp_localize_script( 'sitegenie-metabox', 'sitegenie', [
+        wp_localize_script( 'jeenie-metabox', 'jeenie', [
             'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'nonce'    => wp_create_nonce( 'sitegenie_nonce' ),
+            'nonce'    => wp_create_nonce( 'jeenie_nonce' ),
         ]);
     }
 
     public function render_metabox( $post ) {
-        require_once SITEGENIE_PLUGIN_DIR . 'templates/metabox.php';
+        require_once JEENIE_PLUGIN_DIR . 'templates/metabox.php';
     }
 
     /**
      * AJAX: genera bozza articolo
      */
     public function ajax_generate_content() {
-        check_ajax_referer( 'sitegenie_nonce', 'nonce' );
+        check_ajax_referer( 'jeenie_nonce', 'nonce' );
         if ( ! current_user_can( 'edit_posts' ) ) wp_send_json_error( 'Permessi insufficienti.' );
 
         $title    = sanitize_text_field( wp_unslash( $_POST['title'] ?? '' ) );
@@ -70,12 +70,12 @@ class SiteGenie_Metabox {
 
         if ( empty( $title ) ) wp_send_json_error( 'Inserisci un titolo.' );
 
-        $connector = SiteGenie_Admin::get_connector();
-        if ( ! $connector ) wp_send_json_error( 'API key non configurata. Vai in SiteGenie → Impostazioni.' );
+        $connector = Jeenie_Admin::get_connector();
+        if ( ! $connector ) wp_send_json_error( 'API key non configurata. Vai in Jeenie → Impostazioni.' );
 
-        if ( SiteGenie_Admin::is_rate_limited() ) wp_send_json_error( 'Hai raggiunto il limite di richieste orarie. Riprova più tardi.' );
+        if ( Jeenie_Admin::is_rate_limited() ) wp_send_json_error( 'Hai raggiunto il limite di richieste orarie. Riprova più tardi.' );
 
-        $context = SiteGenie_Admin::get_site_context();
+        $context = Jeenie_Admin::get_site_context();
         $prompt  = "$context\n\n";
         $prompt .= "Scrivi una bozza completa per un " . ( $type === 'page' ? 'pagina web' : 'articolo di blog' );
         $prompt .= " con il titolo: \"$title\".";
@@ -95,7 +95,7 @@ class SiteGenie_Metabox {
      * AJAX: genera meta SEO
      */
     public function ajax_generate_seo() {
-        check_ajax_referer( 'sitegenie_nonce', 'nonce' );
+        check_ajax_referer( 'jeenie_nonce', 'nonce' );
         if ( ! current_user_can( 'edit_posts' ) ) wp_send_json_error( 'Permessi insufficienti.' );
 
         $title   = sanitize_text_field( wp_unslash( $_POST['title'] ?? '' ) );
@@ -103,12 +103,12 @@ class SiteGenie_Metabox {
 
         if ( empty( $title ) && empty( $content ) ) wp_send_json_error( 'Nessun contenuto da analizzare.' );
 
-        $connector = SiteGenie_Admin::get_connector();
+        $connector = Jeenie_Admin::get_connector();
         if ( ! $connector ) wp_send_json_error( 'API key non configurata.' );
 
-        if ( SiteGenie_Admin::is_rate_limited() ) wp_send_json_error( 'Hai raggiunto il limite di richieste orarie. Riprova più tardi.' );
+        if ( Jeenie_Admin::is_rate_limited() ) wp_send_json_error( 'Hai raggiunto il limite di richieste orarie. Riprova più tardi.' );
 
-        $context = SiteGenie_Admin::get_site_context();
+        $context = Jeenie_Admin::get_site_context();
         $prompt  = "$context\n\n";
         $prompt .= "Basandoti su questo contenuto:\nTitolo: $title\n";
         if ( $content ) $prompt .= "Testo: " . substr( $content, 0, 500 ) . "...\n";
