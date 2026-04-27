@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Connettore per OpenAI API (GPT) — con Function Calling
  */
-class SiteGenie_OpenAI extends SiteGenie_API_Connector {
+class Jeenie_OpenAI extends Jeenie_API_Connector {
 
     private $api_base = 'https://api.openai.com/v1/chat/completions';
 
@@ -31,7 +31,7 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
         $response = $this->http_post( $this->get_api_base(), $body, $this->auth_headers() );
 
         if ( ! $response['success'] ) {
-            SiteGenie_Logger::log( $this->get_provider_name(), 0, 0, 'error', $response['error'] );
+            Jeenie_Logger::log( $this->get_provider_name(), 0, 0, 'error', $response['error'] );
             return $this->format_error( $response['error'], $response['code'] );
         }
 
@@ -39,13 +39,13 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
         $text = $data['choices'][0]['message']['content'] ?? '';
 
         if ( empty( $text ) ) {
-            SiteGenie_Logger::log( $this->get_provider_name(), 0, 0, 'error', 'Risposta vuota.' );
+            Jeenie_Logger::log( $this->get_provider_name(), 0, 0, 'error', 'Risposta vuota.' );
             return $this->format_error( 'Risposta vuota da OpenAI.' );
         }
 
         $pt = $data['usage']['prompt_tokens']     ?? 0;
         $ct = $data['usage']['completion_tokens'] ?? 0;
-        SiteGenie_Logger::log( $this->get_provider_name(), $pt, $ct, 'success' );
+        Jeenie_Logger::log( $this->get_provider_name(), $pt, $ct, 'success' );
 
         return $this->format_response( $text, $pt, $ct );
     }
@@ -83,7 +83,7 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
             $response = $this->http_post( $this->get_api_base(), $body, $this->auth_headers() );
 
             if ( ! $response['success'] ) {
-                SiteGenie_Logger::log( $this->get_provider_name(), $total_pt, $total_ct, 'error', $response['error'] );
+                Jeenie_Logger::log( $this->get_provider_name(), $total_pt, $total_ct, 'error', $response['error'] );
                 return $this->format_error( $response['error'], $response['code'] );
             }
 
@@ -96,7 +96,7 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
             // Nessun tool call
             if ( empty( $msg['tool_calls'] ) ) {
                 $text = $msg['content'] ?? 'Operazione completata.';
-                SiteGenie_Logger::log( $this->get_provider_name(), $total_pt, $total_ct, 'success' );
+                Jeenie_Logger::log( $this->get_provider_name(), $total_pt, $total_ct, 'success' );
                 $result = $this->format_response( $text, $total_pt, $total_ct );
                 if ( $last_action ) $result['action_taken'] = $last_action;
                 return $result;
@@ -107,7 +107,7 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
             foreach ( $msg['tool_calls'] as $tc ) {
                 $tool_name = $tc['function']['name'];
                 $tool_args = json_decode( $tc['function']['arguments'], true ) ?? [];
-                $tool_result = SiteGenie_Tools::execute( $tool_name, $tool_args );
+                $tool_result = Jeenie_Tools::execute( $tool_name, $tool_args );
 
                 if ( in_array( $tool_name, [ 'create_post', 'update_post', 'delete_post', 'create_custom_post', 'update_custom_post', 'moderate_comment', 'reply_comment', 'update_site_settings', 'create_user', 'create_product', 'add_menu_item', 'create_component' ] ) ) {
                     $last_action = [ 'tool' => $tool_name, 'result' => $tool_result ];
@@ -122,7 +122,7 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
         }
 
         $fallback = $last_action['result']['message'] ?? 'Operazione completata.';
-        SiteGenie_Logger::log( $this->get_provider_name(), $total_pt, $total_ct, 'success' );
+        Jeenie_Logger::log( $this->get_provider_name(), $total_pt, $total_ct, 'success' );
         $result = $this->format_response( $fallback, $total_pt, $total_ct );
         if ( $last_action ) $result['action_taken'] = $last_action;
         return $result;
@@ -133,7 +133,7 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
     }
 
     private function build_system_prompt(): string {
-        $system = SiteGenie_Admin::get_site_context();
+        $system = Jeenie_Admin::get_site_context();
         $system .= "\n\nSei un assistente AI integrato nel pannello di amministrazione WordPress. ";
         $system .= "Puoi eseguire azioni reali sul sito usando i tool disponibili. ";
         $system .= "Quando l'utente chiede di creare, modificare, eliminare o recuperare contenuti, usa SEMPRE i tool appropriati. NON chiedere mai all'utente di eseguire comandi o tool. ";
@@ -148,7 +148,7 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
      */
     private function convert_tools(): array {
         $tools = [];
-        foreach ( SiteGenie_Tools::get_declarations() as $decl ) {
+        foreach ( Jeenie_Tools::get_declarations() as $decl ) {
             $params = $decl['parameters'] ?? [];
             if ( $params instanceof \stdClass ) {
                 $params = [ 'type' => 'object', 'properties' => new \stdClass() ];
@@ -199,7 +199,7 @@ class SiteGenie_OpenAI extends SiteGenie_API_Connector {
             }
         });
 
-        SiteGenie_Logger::log( $this->get_provider_name(), $total_pt, $total_ct, 'success' );
+        Jeenie_Logger::log( $this->get_provider_name(), $total_pt, $total_ct, 'success' );
         echo "data: [DONE]\n\n";
     }
 
