@@ -3,31 +3,31 @@
 <div class="jeenie-metabox">
 
     <div class="jeenie-mb-tabs">
-        <button type="button" class="jeenie-tab active" data-tab="content">✍️ <?php esc_html_e( 'Contenuto', 'jeenie-ai-assistant' ); ?></button>
-        <button type="button" class="jeenie-tab" data-tab="seo">🔍 <?php esc_html_e( 'SEO', 'jeenie-ai-assistant' ); ?></button>
+        <button type="button" class="jeenie-tab active" data-tab="content">✍️ <?php esc_html_e( 'Contenuto', 'jeenie' ); ?></button>
+        <button type="button" class="jeenie-tab" data-tab="seo">🔍 <?php esc_html_e( 'SEO', 'jeenie' ); ?></button>
     </div>
 
     <!-- TAB CONTENUTO -->
     <div class="jeenie-tab-content active" id="jeenie-tab-content">
         <div class="jeenie-mb-field">
-            <label><?php esc_html_e( 'Keywords (opzionale)', 'jeenie-ai-assistant' ); ?></label>
-            <input type="text" id="jeenie-keywords" placeholder="<?php esc_attr_e( 'es. scarpe running, sport...', 'jeenie-ai-assistant' ); ?>" />
+            <label><?php esc_html_e( 'Keywords (opzionale)', 'jeenie' ); ?></label>
+            <input type="text" id="jeenie-keywords" placeholder="<?php esc_attr_e( 'es. scarpe running, sport...', 'jeenie' ); ?>" />
         </div>
         <button type="button" id="jeenie-generate-content" class="button button-primary jeenie-btn-full">
-            ✨ <?php esc_html_e( 'Genera Bozza Articolo', 'jeenie-ai-assistant' ); ?>
+            ✨ <?php esc_html_e( 'Genera Bozza Articolo', 'jeenie' ); ?>
         </button>
         <div id="jeenie-content-result" class="jeenie-result" style="display:none;">
             <div class="jeenie-result-text"></div>
-            <button type="button" class="button jeenie-insert-content">⬆️ <?php esc_html_e( 'Inserisci nell\'editor', 'jeenie-ai-assistant' ); ?></button>
-            <button type="button" class="button jeenie-copy-content">📋 <?php esc_html_e( 'Copia testo', 'jeenie-ai-assistant' ); ?></button>
+            <button type="button" class="button jeenie-insert-content">⬆️ <?php esc_html_e( 'Inserisci nell\'editor', 'jeenie' ); ?></button>
+            <button type="button" class="button jeenie-copy-content">📋 <?php esc_html_e( 'Copia testo', 'jeenie' ); ?></button>
         </div>
     </div>
 
     <!-- TAB SEO -->
     <div class="jeenie-tab-content" id="jeenie-tab-seo">
-        <p class="description"><?php esc_html_e( 'Genera meta title, description ed excerpt basati sul contenuto del post.', 'jeenie-ai-assistant' ); ?></p>
+        <p class="description"><?php esc_html_e( 'Genera meta title, description ed excerpt basati sul contenuto del post.', 'jeenie' ); ?></p>
         <button type="button" id="jeenie-generate-seo" class="button button-primary jeenie-btn-full">
-            🔍 <?php esc_html_e( 'Genera Meta SEO', 'jeenie-ai-assistant' ); ?>
+            🔍 <?php esc_html_e( 'Genera Meta SEO', 'jeenie' ); ?>
         </button>
         <div id="jeenie-seo-result" class="jeenie-result" style="display:none;">
             <div class="jeenie-seo-field">
@@ -41,13 +41,13 @@
             <div class="jeenie-seo-field">
                 <label><strong>Excerpt</strong></label>
                 <textarea id="jeenie-excerpt" class="widefat" rows="2"></textarea>
-                <button type="button" class="button jeenie-insert-excerpt">⬆️ <?php esc_html_e( 'Inserisci Excerpt', 'jeenie-ai-assistant' ); ?></button>
+                <button type="button" class="button jeenie-insert-excerpt">⬆️ <?php esc_html_e( 'Inserisci Excerpt', 'jeenie' ); ?></button>
             </div>
         </div>
     </div>
 
     <div id="jeenie-loading" class="jeenie-loading" style="display:none;">
-        <span class="spinner is-active"></span> <?php esc_html_e( 'L\'AI sta elaborando...', 'jeenie-ai-assistant' ); ?>
+        <span class="spinner is-active"></span> <?php esc_html_e( 'L\'AI sta elaborando...', 'jeenie' ); ?>
     </div>
 
     <div id="jeenie-error" class="jeenie-error notice notice-error" style="display:none;"></div>
