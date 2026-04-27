@@ -2,7 +2,7 @@
 <div class="wrap jeenie-settings">
 
     <div class="jeenie-header rounded-3 mb-4 d-flex align-items-center gap-3 p-4">
-        <h1 class="text-white m-0 fs-4"><i class="fa-solid fa-robot"></i> <?php esc_html_e( 'Jeenie — Log Chiamate', 'jeenie-ai-assistant' ); ?></h1>
+        <h1 class="text-white m-0 fs-4"><i class="fa-solid fa-robot"></i> <?php esc_html_e( 'Jeenie — Log Chiamate', 'jeenie' ); ?></h1>
     </div>
 
     <div class="row g-3 mb-4">
@@ -10,7 +10,7 @@
             <div class="card text-center">
                 <div class="card-body py-3">
                     <span class="jeenie-stat-number"><?php echo esc_html( intval( $stats['total_calls'] ) ); ?></span>
-                    <span class="jeenie-stat-label"><?php esc_html_e( 'Chiamate Totali', 'jeenie-ai-assistant' ); ?></span>
+                    <span class="jeenie-stat-label"><?php esc_html_e( 'Chiamate Totali', 'jeenie' ); ?></span>
                 </div>
             </div>
         </div>
@@ -18,7 +18,7 @@
             <div class="card text-center">
                 <div class="card-body py-3">
                     <span class="jeenie-stat-number"><?php echo esc_html( number_format( intval( $stats['total_tokens'] ) ) ); ?></span>
-                    <span class="jeenie-stat-label"><?php esc_html_e( 'Token Usati', 'jeenie-ai-assistant' ); ?></span>
+                    <span class="jeenie-stat-label"><?php esc_html_e( 'Token Usati', 'jeenie' ); ?></span>
                 </div>
             </div>
         </div>
@@ -26,7 +26,7 @@
             <div class="card text-center">
                 <div class="card-body py-3">
                     <span class="jeenie-stat-number"><?php echo esc_html( intval( $stats['total_errors'] ) ); ?></span>
-                    <span class="jeenie-stat-label"><?php esc_html_e( 'Errori', 'jeenie-ai-assistant' ); ?></span>
+                    <span class="jeenie-stat-label"><?php esc_html_e( 'Errori', 'jeenie' ); ?></span>
                 </div>
             </div>
         </div>
@@ -39,7 +39,7 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
-                        <h3 class="fs-6 mb-3"><i class="fa-solid fa-chart-line"></i> <?php esc_html_e( 'Chiamate e Token (ultimi 30 giorni)', 'jeenie-ai-assistant' ); ?></h3>
+                        <h3 class="fs-6 mb-3"><i class="fa-solid fa-chart-line"></i> <?php esc_html_e( 'Chiamate e Token (ultimi 30 giorni)', 'jeenie' ); ?></h3>
                         <canvas id="jeenie-chart-daily" height="200"></canvas>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h3 class="fs-6 mb-3"><i class="fa-solid fa-chart-pie"></i> <?php esc_html_e( 'Provider', 'jeenie-ai-assistant' ); ?></h3>
+                        <h3 class="fs-6 mb-3"><i class="fa-solid fa-chart-pie"></i> <?php esc_html_e( 'Provider', 'jeenie' ); ?></h3>
                         <canvas id="jeenie-chart-provider" height="200"></canvas>
                     </div>
                 </div>
@@ -68,14 +68,14 @@
                     labels: dailyData.map(function(d) { return d.day; }),
                     datasets: [
                         {
-                            label: '<?php echo esc_js( __( 'Chiamate', 'jeenie-ai-assistant' ) ); ?>',
+                            label: '<?php echo esc_js( __( 'Chiamate', 'jeenie' ) ); ?>',
                             data: dailyData.map(function(d) { return parseInt(d.calls); }),
                             backgroundColor: 'rgba(15, 52, 96, 0.7)',
                             borderRadius: 4,
                             yAxisID: 'y',
                         },
                         {
-                            label: '<?php echo esc_js( __( 'Token', 'jeenie-ai-assistant' ) ); ?>',
+                            label: '<?php echo esc_js( __( 'Token', 'jeenie' ) ); ?>',
                             data: dailyData.map(function(d) { return parseInt(d.prompt_tokens) + parseInt(d.completion_tokens); }),
                             type: 'line',
                             borderColor: '#533483',
@@ -90,8 +90,8 @@
                     responsive: true,
                     interaction: { mode: 'index', intersect: false },
                     scales: {
-                        y: { position: 'left', beginAtZero: true, title: { display: true, text: '<?php echo esc_js( __( 'Chiamate', 'jeenie-ai-assistant' ) ); ?>' } },
-                        y1: { position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, title: { display: true, text: '<?php echo esc_js( __( 'Token', 'jeenie-ai-assistant' ) ); ?>' } },
+                        y: { position: 'left', beginAtZero: true, title: { display: true, text: '<?php echo esc_js( __( 'Chiamate', 'jeenie' ) ); ?>' } },
+                        y1: { position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, title: { display: true, text: '<?php echo esc_js( __( 'Token', 'jeenie' ) ); ?>' } },
                     },
                     plugins: { legend: { position: 'bottom' } }
                 }
@@ -117,12 +117,12 @@
         </script>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <button type="button" id="jeenie-clear-logs" class="btn btn-outline-danger btn-sm">
-                <i class="fa-solid fa-trash"></i> <?php esc_html_e( 'Svuota Log', 'jeenie-ai-assistant' ); ?>
+                <i class="fa-solid fa-trash"></i> <?php esc_html_e( 'Svuota Log', 'jeenie' ); ?>
             </button>
             <span class="text-muted small">
                 <?php
                 // translators: %d is the total number of log entries
-                echo esc_html( sprintf( __( '%d registrazioni totali', 'jeenie-ai-assistant' ), intval( $total_items ) ) ); ?>
+                echo esc_html( sprintf( __( '%d registrazioni totali', 'jeenie' ), intval( $total_items ) ) ); ?>
             </span>
         </div>
     <?php endif; ?>
@@ -130,7 +130,7 @@
     <?php if ( empty( $logs ) ) : ?>
         <div class="card">
             <div class="card-body">
-                <p class="mb-0"><?php esc_html_e( 'Nessuna chiamata registrata ancora. Inizia a usare Jeenie per vedere i log qui.', 'jeenie-ai-assistant' ); ?></p>
+                <p class="mb-0"><?php esc_html_e( 'Nessuna chiamata registrata ancora. Inizia a usare Jeenie per vedere i log qui.', 'jeenie' ); ?></p>
             </div>
         </div>
     <?php else : ?>
@@ -139,12 +139,12 @@
                 <table class="table table-striped table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th><?php esc_html_e( 'Data', 'jeenie-ai-assistant' ); ?></th>
-                            <th><?php esc_html_e( 'Provider', 'jeenie-ai-assistant' ); ?></th>
-                            <th><?php esc_html_e( 'Prompt Token', 'jeenie-ai-assistant' ); ?></th>
-                            <th><?php esc_html_e( 'Completion Token', 'jeenie-ai-assistant' ); ?></th>
-                            <th><?php esc_html_e( 'Totale', 'jeenie-ai-assistant' ); ?></th>
-                            <th><?php esc_html_e( 'Stato', 'jeenie-ai-assistant' ); ?></th>
+                            <th><?php esc_html_e( 'Data', 'jeenie' ); ?></th>
+                            <th><?php esc_html_e( 'Provider', 'jeenie' ); ?></th>
+                            <th><?php esc_html_e( 'Prompt Token', 'jeenie' ); ?></th>
+                            <th><?php esc_html_e( 'Completion Token', 'jeenie' ); ?></th>
+                            <th><?php esc_html_e( 'Totale', 'jeenie' ); ?></th>
+                            <th><?php esc_html_e( 'Stato', 'jeenie' ); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -159,7 +159,7 @@
                                     <?php if ( $jeenie_log['status'] === 'success' ) : ?>
                                         <span class="badge bg-success"><i class="fa-solid fa-check"></i> OK</span>
                                     <?php else : ?>
-                                        <span class="badge bg-danger jeenie-log-error" style="cursor:pointer;" data-error="<?php echo esc_attr( $jeenie_log['error_message'] ); ?>"><i class="fa-solid fa-xmark"></i> <?php esc_html_e( 'Errore', 'jeenie-ai-assistant' ); ?></span>
+                                        <span class="badge bg-danger jeenie-log-error" style="cursor:pointer;" data-error="<?php echo esc_attr( $jeenie_log['error_message'] ); ?>"><i class="fa-solid fa-xmark"></i> <?php esc_html_e( 'Errore', 'jeenie' ); ?></span>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -175,19 +175,19 @@
                     if ( $current > 1 ) :
                     ?>
                         <a href="<?php echo esc_url( add_query_arg( 'paged', $current - 1, $jeenie_base_url ) ); ?>" class="btn btn-outline-secondary btn-sm">
-                            <i class="fa-solid fa-chevron-left"></i> <?php esc_html_e( 'Precedente', 'jeenie-ai-assistant' ); ?>
+                            <i class="fa-solid fa-chevron-left"></i> <?php esc_html_e( 'Precedente', 'jeenie' ); ?>
                         </a>
                     <?php endif; ?>
 
                     <span class="text-muted small">
                         <?php
                         // translators: %1$d is the current page number, %2$d is the total number of pages
-                        echo esc_html( sprintf( __( 'Pagina %1$d di %2$d', 'jeenie-ai-assistant' ), $current, $total_pages ) ); ?>
+                        echo esc_html( sprintf( __( 'Pagina %1$d di %2$d', 'jeenie' ), $current, $total_pages ) ); ?>
                     </span>
 
                     <?php if ( $current < $total_pages ) : ?>
                         <a href="<?php echo esc_url( add_query_arg( 'paged', $current + 1, $jeenie_base_url ) ); ?>" class="btn btn-outline-secondary btn-sm">
-                            <?php esc_html_e( 'Successiva', 'jeenie-ai-assistant' ); ?> <i class="fa-solid fa-chevron-right"></i>
+                            <?php esc_html_e( 'Successiva', 'jeenie' ); ?> <i class="fa-solid fa-chevron-right"></i>
                         </a>
                     <?php endif; ?>
                 </div>
