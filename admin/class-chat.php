@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Classe Chat — widget AI con tool use nel back-office
  */
-class SiteGenie_Chat {
+class Jeenie_Chat {
 
     private static $instance = null;
 
@@ -18,41 +18,41 @@ class SiteGenie_Chat {
     private function __construct() {
         add_action( 'admin_footer',           [ $this, 'render_chat_widget' ] );
         add_action( 'admin_enqueue_scripts',  [ $this, 'enqueue_assets' ] );
-        add_action( 'wp_ajax_sitegenie_chat', [ $this, 'ajax_chat' ] );
-        add_action( 'wp_ajax_sitegenie_chat_stream', [ $this, 'ajax_chat_stream' ] );
-        add_action( 'wp_ajax_sitegenie_get_conversations', [ $this, 'ajax_get_conversations' ] );
-        add_action( 'wp_ajax_sitegenie_load_conversation', [ $this, 'ajax_load_conversation' ] );
-        add_action( 'wp_ajax_sitegenie_delete_conversation', [ $this, 'ajax_delete_conversation' ] );
-        add_action( 'wp_ajax_sitegenie_new_conversation', [ $this, 'ajax_new_conversation' ] );
+        add_action( 'wp_ajax_jeenie_chat', [ $this, 'ajax_chat' ] );
+        add_action( 'wp_ajax_jeenie_chat_stream', [ $this, 'ajax_chat_stream' ] );
+        add_action( 'wp_ajax_jeenie_get_conversations', [ $this, 'ajax_get_conversations' ] );
+        add_action( 'wp_ajax_jeenie_load_conversation', [ $this, 'ajax_load_conversation' ] );
+        add_action( 'wp_ajax_jeenie_delete_conversation', [ $this, 'ajax_delete_conversation' ] );
+        add_action( 'wp_ajax_jeenie_new_conversation', [ $this, 'ajax_new_conversation' ] );
     }
 
     public function enqueue_assets() {
-        wp_enqueue_style( 'fontawesome', SITEGENIE_PLUGIN_URL . 'assets/vendor/fontawesome.min.css', [], '6.5.1' );
+        wp_enqueue_style( 'fontawesome', JEENIE_PLUGIN_URL . 'assets/vendor/fontawesome.min.css', [], '6.5.1' );
 
-        wp_enqueue_style( 'sitegenie-chat', SITEGENIE_PLUGIN_URL . 'assets/css/chat.css', [], SITEGENIE_VERSION );
-        wp_enqueue_script( 'marked', SITEGENIE_PLUGIN_URL . 'assets/vendor/marked.min.js', [], '16.3.0', true );
-        wp_enqueue_script( 'sitegenie-chat', SITEGENIE_PLUGIN_URL . 'assets/js/chat.js', [ 'jquery', 'marked' ], SITEGENIE_VERSION, true );
+        wp_enqueue_style( 'jeenie-chat', JEENIE_PLUGIN_URL . 'assets/css/chat.css', [], JEENIE_VERSION );
+        wp_enqueue_script( 'marked', JEENIE_PLUGIN_URL . 'assets/vendor/marked.min.js', [], '16.3.0', true );
+        wp_enqueue_script( 'jeenie-chat', JEENIE_PLUGIN_URL . 'assets/js/chat.js', [ 'jquery', 'marked' ], JEENIE_VERSION, true );
 
-        wp_localize_script( 'sitegenie-chat', 'sitegenie_chat', [
+        wp_localize_script( 'jeenie-chat', 'jeenie_chat', [
             'ajax_url'   => admin_url( 'admin-ajax.php' ),
-            'nonce'      => wp_create_nonce( 'sitegenie_nonce' ),
+            'nonce'      => wp_create_nonce( 'jeenie_nonce' ),
             'session_id' => wp_get_session_token(),
         ]);
     }
 
     public function render_chat_widget() {
-        require_once SITEGENIE_PLUGIN_DIR . 'templates/chat-widget.php';
+        require_once JEENIE_PLUGIN_DIR . 'templates/chat-widget.php';
     }
 
     /**
      * AJAX: gestisce il messaggio della chat con tool use
      */
     public function ajax_chat() {
-        check_ajax_referer( 'sitegenie_nonce', 'nonce' );
-        if ( ! current_user_can( 'edit_posts' ) ) wp_send_json_error( __( 'Permessi insufficienti.', 'sitegenie' ) );
+        check_ajax_referer( 'jeenie_nonce', 'nonce' );
+        if ( ! current_user_can( 'edit_posts' ) ) wp_send_json_error( __( 'Permessi insufficienti.', 'jeenie-ai-assistant' ) );
 
         $message = sanitize_textarea_field( wp_unslash( $_POST['message'] ?? '' ) );
-        if ( empty( $message ) ) wp_send_json_error( __( 'Messaggio vuoto.', 'sitegenie' ) );
+        if ( empty( $message ) ) wp_send_json_error( __( 'Messaggio vuoto.', 'jeenie-ai-assistant' ) );
 
         $user_id         = get_current_user_id();
         $conversation_id = intval( $_POST['conversation_id'] ?? 0 );
@@ -60,7 +60,7 @@ class SiteGenie_Chat {
         // Ricostruisci history dal DB (sicuro) oppure usa array vuoto per nuova chat
         $clean_history = [];
         if ( $conversation_id ) {
-            $db_messages = SiteGenie_History::get_messages( $conversation_id, $user_id );
+            $db_messages = Jeenie_History::get_messages( $conversation_id, $user_id );
             foreach ( $db_messages as $msg ) {
                 $clean_history[] = [
                     'role'  => $msg['role'] === 'model' ? 'model' : 'user',
@@ -69,22 +69,22 @@ class SiteGenie_Chat {
             }
         }
 
-        $connector = SiteGenie_Admin::get_connector();
-        if ( ! $connector ) wp_send_json_error( __( 'API key non configurata. Vai in SiteGenie → Impostazioni.', 'sitegenie' ) );
+        $connector = Jeenie_Admin::get_connector();
+        if ( ! $connector ) wp_send_json_error( __( 'API key non configurata. Vai in Jeenie → Impostazioni.', 'jeenie-ai-assistant' ) );
 
-        if ( SiteGenie_Admin::is_rate_limited() ) wp_send_json_error( __( 'Hai raggiunto il limite di richieste orarie. Riprova più tardi.', 'sitegenie' ) );
+        if ( Jeenie_Admin::is_rate_limited() ) wp_send_json_error( __( 'Hai raggiunto il limite di richieste orarie. Riprova più tardi.', 'jeenie-ai-assistant' ) );
 
         $response = $connector->generate_with_tools( $clean_history, $message );
         if ( ! $response['success'] ) wp_send_json_error( $response['error'] );
 
         // Crea conversazione se non esiste
         if ( ! $conversation_id ) {
-            $conversation_id = SiteGenie_History::create_conversation( $user_id, $message );
+            $conversation_id = Jeenie_History::create_conversation( $user_id, $message );
         }
 
         // Salva messaggi nel DB
-        SiteGenie_History::save_message( $conversation_id, 'user', $message );
-        SiteGenie_History::save_message( $conversation_id, 'model', $response['text'] );
+        Jeenie_History::save_message( $conversation_id, 'user', $message );
+        Jeenie_History::save_message( $conversation_id, 'model', $response['text'] );
 
         // History per Gemini (non più inviata al client)
 
@@ -100,15 +100,15 @@ class SiteGenie_Chat {
      * Il tool calling avviene normalmente, poi la risposta testuale viene streamata.
      */
     public function ajax_chat_stream() {
-        check_ajax_referer( 'sitegenie_nonce', 'nonce' );
+        check_ajax_referer( 'jeenie_nonce', 'nonce' );
         if ( ! current_user_can( 'edit_posts' ) ) {
-            $this->sse_error( __( 'Permessi insufficienti.', 'sitegenie' ) );
+            $this->sse_error( __( 'Permessi insufficienti.', 'jeenie-ai-assistant' ) );
             return;
         }
 
         $message = sanitize_textarea_field( wp_unslash( $_GET['message'] ?? '' ) );
         if ( empty( $message ) ) {
-            $this->sse_error( __( 'Messaggio vuoto.', 'sitegenie' ) );
+            $this->sse_error( __( 'Messaggio vuoto.', 'jeenie-ai-assistant' ) );
             return;
         }
 
@@ -117,7 +117,7 @@ class SiteGenie_Chat {
 
         $clean_history = [];
         if ( $conversation_id ) {
-            $db_messages = SiteGenie_History::get_messages( $conversation_id, $user_id );
+            $db_messages = Jeenie_History::get_messages( $conversation_id, $user_id );
             foreach ( $db_messages as $msg ) {
                 $clean_history[] = [
                     'role'  => $msg['role'] === 'model' ? 'model' : 'user',
@@ -126,14 +126,14 @@ class SiteGenie_Chat {
             }
         }
 
-        $connector = SiteGenie_Admin::get_connector();
+        $connector = Jeenie_Admin::get_connector();
         if ( ! $connector ) {
-            $this->sse_error( __( 'API key non configurata.', 'sitegenie' ) );
+            $this->sse_error( __( 'API key non configurata.', 'jeenie-ai-assistant' ) );
             return;
         }
 
-        if ( SiteGenie_Admin::is_rate_limited() ) {
-            $this->sse_error( __( 'Limite richieste orarie raggiunto.', 'sitegenie' ) );
+        if ( Jeenie_Admin::is_rate_limited() ) {
+            $this->sse_error( __( 'Limite richieste orarie raggiunto.', 'jeenie-ai-assistant' ) );
             return;
         }
 
@@ -151,9 +151,9 @@ class SiteGenie_Chat {
 
         // Knowledge base: cerca frammenti rilevanti
         $kb_context = '';
-        if ( get_option( 'sitegenie_knowledge_enabled', 1 ) ) {
-            $max_chars  = (int) get_option( 'sitegenie_knowledge_max_chars', 1500 );
-            $kb_results = SiteGenie_Knowledge::search( $message, $max_chars );
+        if ( get_option( 'jeenie_knowledge_enabled', 1 ) ) {
+            $max_chars  = (int) get_option( 'jeenie_knowledge_max_chars', 1500 );
+            $kb_results = Jeenie_Knowledge::search( $message, $max_chars );
             if ( $kb_results ) {
                 $kb_context = "\n\n[KNOWLEDGE BASE - usa queste informazioni se pertinenti alla domanda:\n" . $kb_results . ']';
             }
@@ -167,10 +167,10 @@ class SiteGenie_Chat {
 
         // Salva nel DB
         if ( ! $conversation_id ) {
-            $conversation_id = SiteGenie_History::create_conversation( $user_id, $message );
+            $conversation_id = Jeenie_History::create_conversation( $user_id, $message );
         }
-        SiteGenie_History::save_message( $conversation_id, 'user', $message );
-        SiteGenie_History::save_message( $conversation_id, 'model', $response['text'] );
+        Jeenie_History::save_message( $conversation_id, 'user', $message );
+        Jeenie_History::save_message( $conversation_id, 'model', $response['text'] );
 
         // Fase 2: invia header SSE e streama la risposta
         header( 'Content-Type: text/event-stream' );
@@ -233,10 +233,10 @@ class SiteGenie_Chat {
      * AJAX: lista conversazioni dell'utente
      */
     public function ajax_get_conversations() {
-        check_ajax_referer( 'sitegenie_nonce', 'nonce' );
+        check_ajax_referer( 'jeenie_nonce', 'nonce' );
         if ( ! current_user_can( 'edit_posts' ) ) wp_send_json_error( 'Permessi insufficienti.' );
 
-        $conversations = SiteGenie_History::get_conversations( get_current_user_id() );
+        $conversations = Jeenie_History::get_conversations( get_current_user_id() );
         wp_send_json_success( $conversations );
     }
 
@@ -244,13 +244,13 @@ class SiteGenie_Chat {
      * AJAX: carica messaggi di una conversazione
      */
     public function ajax_load_conversation() {
-        check_ajax_referer( 'sitegenie_nonce', 'nonce' );
+        check_ajax_referer( 'jeenie_nonce', 'nonce' );
         if ( ! current_user_can( 'edit_posts' ) ) wp_send_json_error( 'Permessi insufficienti.' );
 
         $conversation_id = intval( $_POST['conversation_id'] ?? 0 );
         if ( ! $conversation_id ) wp_send_json_error( 'ID conversazione mancante.' );
 
-        $messages = SiteGenie_History::get_messages( $conversation_id, get_current_user_id() );
+        $messages = Jeenie_History::get_messages( $conversation_id, get_current_user_id() );
         if ( empty( $messages ) ) wp_send_json_error( 'Conversazione non trovata.' );
 
         // Ricostruisci history per Gemini
@@ -272,11 +272,11 @@ class SiteGenie_Chat {
      * AJAX: elimina conversazione
      */
     public function ajax_delete_conversation() {
-        check_ajax_referer( 'sitegenie_nonce', 'nonce' );
+        check_ajax_referer( 'jeenie_nonce', 'nonce' );
         if ( ! current_user_can( 'edit_posts' ) ) wp_send_json_error( 'Permessi insufficienti.' );
 
         $conversation_id = intval( $_POST['conversation_id'] ?? 0 );
-        $deleted = SiteGenie_History::delete_conversation( $conversation_id, get_current_user_id() );
+        $deleted = Jeenie_History::delete_conversation( $conversation_id, get_current_user_id() );
 
         $deleted ? wp_send_json_success( 'Eliminata.' ) : wp_send_json_error( 'Errore.' );
     }
@@ -285,7 +285,7 @@ class SiteGenie_Chat {
      * AJAX: nuova conversazione (reset chat)
      */
     public function ajax_new_conversation() {
-        check_ajax_referer( 'sitegenie_nonce', 'nonce' );
+        check_ajax_referer( 'jeenie_nonce', 'nonce' );
         if ( ! current_user_can( 'edit_posts' ) ) wp_send_json_error( 'Permessi insufficienti.' );
         wp_send_json_success( [ 'conversation_id' => 0 ] );
     }
