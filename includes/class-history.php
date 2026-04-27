@@ -2,9 +2,9 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * SiteGenie_History — gestisce conversazioni e messaggi nel DB
+ * Jeenie_History — gestisce conversazioni e messaggi nel DB
  */
-class SiteGenie_History {
+class Jeenie_History {
 
     /**
      * Crea una nuova conversazione e restituisce l'ID
@@ -16,7 +16,7 @@ class SiteGenie_History {
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- custom table
         $wpdb->insert(
-            $wpdb->prefix . 'sitegenie_conversations',
+            $wpdb->prefix . 'jeenie_conversations',
             [ 'user_id' => $user_id, 'title' => $title, 'created_at' => $now, 'updated_at' => $now ],
             [ '%d', '%s', '%s', '%s' ]
         );
@@ -31,13 +31,13 @@ class SiteGenie_History {
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- custom table
         $wpdb->insert(
-            $wpdb->prefix . 'sitegenie_messages',
+            $wpdb->prefix . 'jeenie_messages',
             [ 'conversation_id' => $conversation_id, 'role' => $role, 'content' => $content, 'created_at' => current_time( 'mysql' ) ],
             [ '%d', '%s', '%s', '%s' ]
         );
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, write operation
         $wpdb->update(
-            $wpdb->prefix . 'sitegenie_conversations',
+            $wpdb->prefix . 'jeenie_conversations',
             [ 'updated_at' => current_time( 'mysql' ) ],
             [ 'id' => $conversation_id ],
             [ '%s' ],
@@ -55,8 +55,8 @@ class SiteGenie_History {
         return $wpdb->get_results( $wpdb->prepare(
             // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table names
             "SELECT c.*, COUNT(m.id) as message_count
-             FROM {$wpdb->prefix}sitegenie_conversations c
-             LEFT JOIN {$wpdb->prefix}sitegenie_messages m ON m.conversation_id = c.id
+             FROM {$wpdb->prefix}jeenie_conversations c
+             LEFT JOIN {$wpdb->prefix}jeenie_messages m ON m.conversation_id = c.id
              WHERE c.user_id = %d
              GROUP BY c.id
              ORDER BY c.updated_at DESC
@@ -73,12 +73,12 @@ class SiteGenie_History {
         global $wpdb;
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- custom table
-        $owner = $wpdb->get_var( $wpdb->prepare( "SELECT user_id FROM {$wpdb->prefix}sitegenie_conversations WHERE id = %d", $conversation_id ) );
+        $owner = $wpdb->get_var( $wpdb->prepare( "SELECT user_id FROM {$wpdb->prefix}jeenie_conversations WHERE id = %d", $conversation_id ) );
         if ( (int) $owner !== $user_id ) return [];
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- custom table
         return $wpdb->get_results( $wpdb->prepare(
-            "SELECT role, content, created_at FROM {$wpdb->prefix}sitegenie_messages WHERE conversation_id = %d ORDER BY created_at ASC",
+            "SELECT role, content, created_at FROM {$wpdb->prefix}jeenie_messages WHERE conversation_id = %d ORDER BY created_at ASC",
             $conversation_id
         ), ARRAY_A );
     }
@@ -90,13 +90,13 @@ class SiteGenie_History {
         global $wpdb;
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- custom table
-        $owner = $wpdb->get_var( $wpdb->prepare( "SELECT user_id FROM {$wpdb->prefix}sitegenie_conversations WHERE id = %d", $conversation_id ) );
+        $owner = $wpdb->get_var( $wpdb->prepare( "SELECT user_id FROM {$wpdb->prefix}jeenie_conversations WHERE id = %d", $conversation_id ) );
         if ( (int) $owner !== $user_id ) return false;
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, delete operation
-        $wpdb->delete( $wpdb->prefix . 'sitegenie_messages', [ 'conversation_id' => $conversation_id ], [ '%d' ] );
+        $wpdb->delete( $wpdb->prefix . 'jeenie_messages', [ 'conversation_id' => $conversation_id ], [ '%d' ] );
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, delete operation
-        $wpdb->delete( $wpdb->prefix . 'sitegenie_conversations', [ 'id' => $conversation_id ], [ '%d' ] );
+        $wpdb->delete( $wpdb->prefix . 'jeenie_conversations', [ 'id' => $conversation_id ], [ '%d' ] );
         return true;
     }
 
@@ -108,7 +108,7 @@ class SiteGenie_History {
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- custom table
         $ids = $wpdb->get_col( $wpdb->prepare(
-            "SELECT id FROM {$wpdb->prefix}sitegenie_conversations WHERE updated_at < DATE_SUB(NOW(), INTERVAL %d DAY)",
+            "SELECT id FROM {$wpdb->prefix}jeenie_conversations WHERE updated_at < DATE_SUB(NOW(), INTERVAL %d DAY)",
             $days
         ) );
 
@@ -118,9 +118,9 @@ class SiteGenie_History {
 
         foreach ( $ids as $id ) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, delete operation
-            $wpdb->delete( $wpdb->prefix . 'sitegenie_messages', [ 'conversation_id' => $id ], [ '%d' ] );
+            $wpdb->delete( $wpdb->prefix . 'jeenie_messages', [ 'conversation_id' => $id ], [ '%d' ] );
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, delete operation
-            $wpdb->delete( $wpdb->prefix . 'sitegenie_conversations', [ 'id' => $id ], [ '%d' ] );
+            $wpdb->delete( $wpdb->prefix . 'jeenie_conversations', [ 'id' => $id ], [ '%d' ] );
         }
 
         return count( $ids );
