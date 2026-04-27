@@ -1,19 +1,19 @@
 /* ================================
-   SiteGenie — Chat Widget CSS
+   Jeenie — Chat Widget CSS
    Nessuna dipendenza da Bootstrap
    ================================ */
 
 /* Widget positioning */
-.sitegenie-chat-widget {
+.jeenie-chat-widget {
     position: fixed;
     bottom: 24px;
     right: 24px;
     z-index: 99999;
 }
-.sitegenie-chat-widget * { box-sizing: border-box; }
+.jeenie-chat-widget * { box-sizing: border-box; }
 
 /* Toggle button */
-.sitegenie-chat-toggle {
+.jeenie-chat-toggle {
     width: 56px;
     height: 56px;
     border-radius: 50%;
@@ -28,13 +28,13 @@
     box-shadow: 0 4px 16px rgba(0,0,0,0.25);
     transition: transform 0.2s, box-shadow 0.2s;
 }
-.sitegenie-chat-toggle:hover {
+.jeenie-chat-toggle:hover {
     transform: scale(1.08);
     box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 
 /* Chat window */
-.sitegenie-chat-window {
+.jeenie-chat-window {
     position: absolute;
     bottom: 68px;
     right: 0;
@@ -46,12 +46,12 @@
     display: none;
     flex-direction: column;
 }
-.sitegenie-chat-window[style*="block"] {
+.jeenie-chat-window[style*="block"] {
     display: flex !important;
 }
 
 /* Header */
-.sitegenie-chat-header {
+.jeenie-chat-header {
     background: linear-gradient(135deg, #1a1a2e, #0f3460);
     color: #fff;
     display: flex;
@@ -59,15 +59,15 @@
     align-items: center;
     padding: 8px 16px;
 }
-.sitegenie-chat-header-title {
+.jeenie-chat-header-title {
     font-weight: 600;
     font-size: 13px;
 }
-.sitegenie-chat-header-actions {
+.jeenie-chat-header-actions {
     display: flex;
     gap: 8px;
 }
-.sitegenie-header-btn {
+.jeenie-header-btn {
     background: none;
     border: 0;
     color: rgba(255,255,255,0.7);
@@ -75,10 +75,10 @@
     font-size: 14px;
     padding: 2px 4px;
 }
-.sitegenie-header-btn:hover { color: #fff; }
+.jeenie-header-btn:hover { color: #fff; }
 
 /* Messages area */
-.sitegenie-chat-messages {
+.jeenie-chat-messages {
     max-height: 300px;
     overflow-y: auto;
     flex: 1;
@@ -89,7 +89,7 @@
 }
 
 /* Message bubbles */
-.sitegenie-chat-message {
+.jeenie-chat-message {
     padding: 8px 12px;
     border-radius: 10px;
     font-size: 13px;
@@ -97,19 +97,19 @@
     max-width: 85%;
     word-wrap: break-word;
 }
-.sitegenie-chat-message--ai {
+.jeenie-chat-message--ai {
     background: #f0f4ff;
     color: #1a1a2e;
     align-self: flex-start;
     border-bottom-left-radius: 3px;
 }
-.sitegenie-chat-message--user {
+.jeenie-chat-message--user {
     background: #0f3460;
     color: #fff;
     align-self: flex-end;
     border-bottom-right-radius: 3px;
 }
-.sitegenie-chat-message--loading {
+.jeenie-chat-message--loading {
     background: #f0f4ff;
     color: #888;
     align-self: flex-start;
@@ -117,14 +117,14 @@
 }
 
 /* Suggestions */
-.sitegenie-chat-suggestions {
+.jeenie-chat-suggestions {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
     border-top: 1px solid #e0e0e0;
     padding: 8px;
 }
-.sitegenie-suggestion {
+.jeenie-suggestion {
     background: #f5f5f5;
     border: 1px solid #ddd;
     border-radius: 50rem;
@@ -133,17 +133,17 @@
     cursor: pointer;
     transition: background 0.15s;
 }
-.sitegenie-suggestion:hover { background: #e8eaf6; }
+.jeenie-suggestion:hover { background: #e8eaf6; }
 
 /* Input area */
-.sitegenie-chat-input-wrap {
+.jeenie-chat-input-wrap {
     display: flex;
     gap: 8px;
     border-top: 1px solid #e0e0e0;
     padding: 8px;
     align-items: flex-end;
 }
-.sitegenie-chat-textarea {
+.jeenie-chat-textarea {
     flex: 1;
     padding: 6px 10px;
     font-size: 13px;
@@ -153,13 +153,13 @@
     resize: none;
     font-family: inherit;
 }
-.sitegenie-chat-textarea:focus {
+.jeenie-chat-textarea:focus {
     border-color: #0f3460;
     box-shadow: 0 0 0 2px rgba(15,52,96,0.15);
 }
 
 /* Send button */
-.sitegenie-btn-send {
+.jeenie-btn-send {
     background: #0f3460;
     color: #fff;
     width: 36px;
@@ -170,22 +170,22 @@
     flex-shrink: 0;
     font-size: 14px;
 }
-.sitegenie-btn-send:hover { background: #533483; }
+.jeenie-btn-send:hover { background: #533483; }
 
 /* Markdown inside AI messages */
-.sitegenie-chat-message--ai p { margin: 0 0 8px; }
-.sitegenie-chat-message--ai p:last-child { margin-bottom: 0; }
-.sitegenie-chat-message--ai ul,
-.sitegenie-chat-message--ai ol { margin: 4px 0 8px; padding-left: 18px; }
-.sitegenie-chat-message--ai li { margin-bottom: 2px; }
-.sitegenie-chat-message--ai strong { font-weight: 600; }
-.sitegenie-chat-message--ai code {
+.jeenie-chat-message--ai p { margin: 0 0 8px; }
+.jeenie-chat-message--ai p:last-child { margin-bottom: 0; }
+.jeenie-chat-message--ai ul,
+.jeenie-chat-message--ai ol { margin: 4px 0 8px; padding-left: 18px; }
+.jeenie-chat-message--ai li { margin-bottom: 2px; }
+.jeenie-chat-message--ai strong { font-weight: 600; }
+.jeenie-chat-message--ai code {
     background: #e2e6f0;
     padding: 1px 5px;
     border-radius: 3px;
     font-size: 12px;
 }
-.sitegenie-chat-message--ai pre {
+.jeenie-chat-message--ai pre {
     background: #1a1a2e;
     color: #e0e0e0;
     padding: 8px 10px;
@@ -194,23 +194,23 @@
     font-size: 11px;
     margin: 6px 0;
 }
-.sitegenie-chat-message--ai pre code {
+.jeenie-chat-message--ai pre code {
     background: none;
     padding: 0;
     color: inherit;
 }
-.sitegenie-chat-message--ai a {
+.jeenie-chat-message--ai a {
     color: #0f3460;
     text-decoration: underline;
 }
-.sitegenie-chat-message--ai h1,
-.sitegenie-chat-message--ai h2,
-.sitegenie-chat-message--ai h3 {
+.jeenie-chat-message--ai h1,
+.jeenie-chat-message--ai h2,
+.jeenie-chat-message--ai h3 {
     font-size: 13px;
     font-weight: 700;
     margin: 8px 0 4px;
 }
-.sitegenie-chat-message--ai blockquote {
+.jeenie-chat-message--ai blockquote {
     border-left: 3px solid #533483;
     margin: 6px 0;
     padding: 4px 10px;
@@ -219,7 +219,7 @@
 }
 
 /* Action badge */
-.sitegenie-action-badge {
+.jeenie-action-badge {
     background: #e8f5e9;
     border: 1px solid #a5d6a7;
     border-radius: 6px;
@@ -230,15 +230,15 @@
     text-align: center;
     margin: 2px 0;
 }
-.sitegenie-action-badge a { color: #1b5e20; font-weight: 600; }
+.jeenie-action-badge a { color: #1b5e20; font-weight: 600; }
 
 /* History panel */
-.sitegenie-history-panel {
+.jeenie-history-panel {
     display: flex;
     flex-direction: column;
     height: 100%;
 }
-.sitegenie-history-header {
+.jeenie-history-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -247,29 +247,29 @@
     font-weight: 600;
     font-size: 13px;
 }
-.sitegenie-history-list {
+.jeenie-history-list {
     flex: 1;
     overflow-y: auto;
     max-height: 350px;
 }
-.sitegenie-conv-item {
+.jeenie-conv-item {
     padding: 10px 14px;
     border-bottom: 1px solid #f0f0f0;
     cursor: pointer;
     transition: background 0.15s;
 }
-.sitegenie-conv-item:hover { background: #f5f7ff; }
-.sitegenie-conv-active { background: #e8eaf6; }
-.sitegenie-conv-meta {
+.jeenie-conv-item:hover { background: #f5f7ff; }
+.jeenie-conv-active { background: #e8eaf6; }
+.jeenie-conv-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-.sitegenie-conv-meta small {
+.jeenie-conv-meta small {
     color: #6c757d;
     font-size: 12px;
 }
-.sitegenie-conv-delete {
+.jeenie-conv-delete {
     background: none;
     border: 0;
     color: #999;
@@ -277,8 +277,8 @@
     padding: 2px 4px;
     font-size: 12px;
 }
-.sitegenie-conv-delete:hover { color: #d63638; }
-.sitegenie-conv-title {
+.jeenie-conv-delete:hover { color: #d63638; }
+.jeenie-conv-title {
     font-size: 13px;
     font-weight: 500;
     white-space: nowrap;
@@ -288,7 +288,7 @@
 }
 
 /* Toast notification */
-.sitegenie-toast {
+.jeenie-toast {
     position: fixed;
     top: 42px;
     right: 20px;
@@ -303,18 +303,18 @@
     transform: translateX(20px);
     transition: opacity 0.3s, transform 0.3s;
 }
-.sitegenie-toast--visible {
+.jeenie-toast--visible {
     opacity: 1;
     transform: translateX(0);
 }
-.sitegenie-toast a {
+.jeenie-toast a {
     color: #90caf9;
     text-decoration: none;
     font-weight: 600;
     margin-left: 6px;
 }
-.sitegenie-toast a:hover { text-decoration: underline; }
-.sitegenie-toast-close {
+.jeenie-toast a:hover { text-decoration: underline; }
+.jeenie-toast-close {
     position: absolute;
     top: 8px;
     right: 12px;
@@ -325,21 +325,21 @@
     cursor: pointer;
     line-height: 1;
 }
-.sitegenie-toast-close:hover { color: #fff; }
+.jeenie-toast-close:hover { color: #fff; }
 
 /* ================================
    Metabox CSS
    ================================ */
-.sitegenie-metabox { font-size: 13px; }
+.jeenie-metabox { font-size: 13px; }
 
-.sitegenie-mb-tabs {
+.jeenie-mb-tabs {
     display: flex;
     gap: 4px;
     margin-bottom: 12px;
     border-bottom: 2px solid #f0f0f0;
     padding-bottom: 8px;
 }
-.sitegenie-tab {
+.jeenie-tab {
     background: none;
     border: 1px solid #ddd;
     border-radius: 6px 6px 0 0;
@@ -349,35 +349,35 @@
     color: #555;
     transition: all 0.15s;
 }
-.sitegenie-tab.active {
+.jeenie-tab.active {
     background: #0f3460;
     color: #fff;
     border-color: #0f3460;
 }
 
-.sitegenie-tab-content { display: none; }
-.sitegenie-tab-content.active { display: block; }
+.jeenie-tab-content { display: none; }
+.jeenie-tab-content.active { display: block; }
 
-.sitegenie-mb-field { margin-bottom: 10px; }
-.sitegenie-mb-field label {
+.jeenie-mb-field { margin-bottom: 10px; }
+.jeenie-mb-field label {
     display: block;
     font-weight: 600;
     margin-bottom: 4px;
     font-size: 12px;
     color: #444;
 }
-.sitegenie-mb-field input { width: 100%; box-sizing: border-box; }
+.jeenie-mb-field input { width: 100%; box-sizing: border-box; }
 
-.sitegenie-btn-full { width: 100%; text-align: center; margin-top: 4px; }
+.jeenie-btn-full { width: 100%; text-align: center; margin-top: 4px; }
 
-.sitegenie-result {
+.jeenie-result {
     margin-top: 12px;
     background: #f9f9f9;
     border: 1px solid #e0e0e0;
     border-radius: 6px;
     padding: 10px;
 }
-.sitegenie-result-text {
+.jeenie-result-text {
     font-size: 12px;
     color: #333;
     line-height: 1.5;
@@ -387,16 +387,16 @@
     white-space: pre-wrap;
 }
 
-.sitegenie-seo-field { margin-bottom: 10px; }
-.sitegenie-seo-field label {
+.jeenie-seo-field { margin-bottom: 10px; }
+.jeenie-seo-field label {
     display: flex;
     justify-content: space-between;
     font-size: 12px;
     margin-bottom: 4px;
 }
-.sitegenie-char-count { color: #888; font-weight: normal; }
+.jeenie-char-count { color: #888; font-weight: normal; }
 
-.sitegenie-loading {
+.jeenie-loading {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -405,7 +405,7 @@
     color: #666;
 }
 
-.sitegenie-error {
+.jeenie-error {
     margin-top: 10px;
     font-size: 12px;
     padding: 8px 10px;
