@@ -1,9 +1,9 @@
 jQuery(function ($) {
 
-    $(document).on('click', '.sitegenie-generate-alt', function () {
+    $(document).on('click', '.jeenie-generate-alt', function () {
         var $btn = $(this);
         var id = $btn.data('id');
-        var $altField = $btn.closest('.compat-field-sitegenie_alt')
+        var $altField = $btn.closest('.compat-field-jeenie_alt')
             .siblings('.compat-field-alt')
             .find('input[name="attachments[' + id + '][alt]"]');
 
@@ -14,9 +14,9 @@ jQuery(function ($) {
 
         $btn.prop('disabled', true).text('⏳ Generazione...');
 
-        $.post(sitegenie_alt.ajax_url, {
-            action: 'sitegenie_generate_alt',
-            nonce: sitegenie_alt.nonce,
+        $.post(jeenie_alt.ajax_url, {
+            action: 'jeenie_generate_alt',
+            nonce: jeenie_alt.nonce,
             attachment_id: id,
         }).done(function (res) {
             if (res.success) {
