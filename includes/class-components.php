@@ -2,9 +2,9 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Jeenie_Components — gestisce i componenti generati dall'AI
+ * Vcai_Components — gestisce i componenti generati dall'AI
  */
-class Jeenie_Components {
+class Vcai_Components {
 
     private static $components_dir = null;
 
@@ -13,7 +13,7 @@ class Jeenie_Components {
      */
     public static function get_dir(): string {
         if ( null === self::$components_dir ) {
-            self::$components_dir = JEENIE_PLUGIN_DIR . 'components/';
+            self::$components_dir = VCAI_PLUGIN_DIR . 'components/';
         }
         return self::$components_dir;
     }
@@ -23,7 +23,7 @@ class Jeenie_Components {
      */
     public static function load_active(): void {
         // Safe mode: disattiva tutto via URL
-        if ( isset( $_GET['jeenie_safe_mode'] ) && $_GET['jeenie_safe_mode'] === '1' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if ( isset( $_GET['vcai_safe_mode'] ) && $_GET['vcai_safe_mode'] === '1' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             self::deactivate_all();
             return;
         }
@@ -85,7 +85,7 @@ class Jeenie_Components {
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, write operation
         $wpdb->replace(
-            $wpdb->prefix . 'jeenie_components',
+            $wpdb->prefix . 'vcai_components',
             [
                 'slug'       => $slug,
                 'name'       => sanitize_text_field( $name ),
@@ -105,7 +105,7 @@ class Jeenie_Components {
     public static function get_all(): array {
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- custom table
-        return $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}jeenie_components ORDER BY created_at DESC", ARRAY_A ) ?: [];
+        return $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}vcai_components ORDER BY created_at DESC", ARRAY_A ) ?: [];
     }
 
     /**
@@ -115,7 +115,7 @@ class Jeenie_Components {
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table
         $wpdb->update(
-            $wpdb->prefix . 'jeenie_components',
+            $wpdb->prefix . 'vcai_components',
             [ 'status' => $status, 'error_message' => $error ],
             [ 'slug' => $slug ],
             [ '%s', '%s' ],
@@ -129,7 +129,7 @@ class Jeenie_Components {
     public static function deactivate_all(): void {
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- custom table
-        $wpdb->query( "UPDATE {$wpdb->prefix}jeenie_components SET status = 'inactive'" );
+        $wpdb->query( "UPDATE {$wpdb->prefix}vcai_components SET status = 'inactive'" );
     }
 
     /**
@@ -158,6 +158,6 @@ class Jeenie_Components {
 
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table
-        $wpdb->delete( $wpdb->prefix . 'jeenie_components', [ 'slug' => $slug ], [ '%s' ] );
+        $wpdb->delete( $wpdb->prefix . 'vcai_components', [ 'slug' => $slug ], [ '%s' ] );
     }
 }
