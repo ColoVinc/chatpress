@@ -1,9 +1,9 @@
 jQuery(function ($) {
 
-    $(document).on('click', '.jeenie-generate-alt', function () {
+    $(document).on('click', '.vcai-generate-alt', function () {
         var $btn = $(this);
         var id = $btn.data('id');
-        var $altField = $btn.closest('.compat-field-jeenie_alt')
+        var $altField = $btn.closest('.compat-field-vcai_alt')
             .siblings('.compat-field-alt')
             .find('input[name="attachments[' + id + '][alt]"]');
 
@@ -14,9 +14,9 @@ jQuery(function ($) {
 
         $btn.prop('disabled', true).text('⏳ Generazione...');
 
-        $.post(jeenie_alt.ajax_url, {
-            action: 'jeenie_generate_alt',
-            nonce: jeenie_alt.nonce,
+        $.post(vcai_alt.ajax_url, {
+            action: 'vcai_generate_alt',
+            nonce: vcai_alt.nonce,
             attachment_id: id,
         }).done(function (res) {
             if (res.success) {
