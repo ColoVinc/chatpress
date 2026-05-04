@@ -2,7 +2,7 @@
 <div class="wrap vcai-settings">
 
     <div class="vcai-header rounded-3 mb-4 d-flex align-items-center gap-3 p-4">
-        <h1 class="text-white m-0 fs-4"><i class="fa-solid fa-book"></i> <?php esc_html_e( 'VColonna AI — Knowledge Base', 'vc-colonna-ai-assistant' ); ?></h1>
+        <h1 class="text-white m-0 fs-4"><i class="fa-solid fa-book"></i> <?php esc_html_e( 'VColonna AI — Knowledge Base', 'vcolonna-ai-assistant' ); ?></h1>
     </div>
 
     <div class="row g-4">
@@ -11,26 +11,26 @@
         <div class="col-md-5">
             <div class="card">
                 <div class="card-body">
-                    <h2 class="card-title fs-6 pb-2 border-bottom"><i class="fa-solid fa-upload"></i> <?php esc_html_e( 'Aggiungi Documento', 'vc-colonna-ai-assistant' ); ?></h2>
-                    <p class="text-muted small"><?php esc_html_e( 'Incolla il testo di un documento (FAQ, linee guida, listino, ecc.). L\'AI lo userà come contesto nelle risposte.', 'vc-colonna-ai-assistant' ); ?></p>
+                    <h2 class="card-title fs-6 pb-2 border-bottom"><i class="fa-solid fa-upload"></i> <?php esc_html_e( 'Aggiungi Documento', 'vcolonna-ai-assistant' ); ?></h2>
+                    <p class="text-muted small"><?php esc_html_e( 'Incolla il testo di un documento (FAQ, linee guida, listino, ecc.). L\'AI lo userà come contesto nelle risposte.', 'vcolonna-ai-assistant' ); ?></p>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold"><?php esc_html_e( 'Nome documento', 'vc-colonna-ai-assistant' ); ?></label>
-                        <input type="text" id="vcai-kb-name" class="form-control form-control-sm" placeholder="<?php esc_attr_e( 'es. FAQ Aziendali, Linee Guida Brand...', 'vc-colonna-ai-assistant' ); ?>" />
+                        <label class="form-label small fw-semibold"><?php esc_html_e( 'Nome documento', 'vcolonna-ai-assistant' ); ?></label>
+                        <input type="text" id="vcai-kb-name" class="form-control form-control-sm" placeholder="<?php esc_attr_e( 'es. FAQ Aziendali, Linee Guida Brand...', 'vcolonna-ai-assistant' ); ?>" />
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold"><?php esc_html_e( 'Contenuto', 'vc-colonna-ai-assistant' ); ?></label>
-                        <textarea id="vcai-kb-content" class="form-control form-control-sm" rows="10" placeholder="<?php esc_attr_e( 'Incolla qui il testo del documento...', 'vc-colonna-ai-assistant' ); ?>"></textarea>
+                        <label class="form-label small fw-semibold"><?php esc_html_e( 'Contenuto', 'vcolonna-ai-assistant' ); ?></label>
+                        <textarea id="vcai-kb-content" class="form-control form-control-sm" rows="10" placeholder="<?php esc_attr_e( 'Incolla qui il testo del documento...', 'vcolonna-ai-assistant' ); ?>"></textarea>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold"><?php esc_html_e( 'Oppure carica un file .txt', 'vc-colonna-ai-assistant' ); ?></label>
+                        <label class="form-label small fw-semibold"><?php esc_html_e( 'Oppure carica un file .txt', 'vcolonna-ai-assistant' ); ?></label>
                         <input type="file" id="vcai-kb-file" class="form-control form-control-sm" accept=".txt" />
                     </div>
 
                     <button type="button" id="vcai-kb-upload" class="btn btn-primary btn-sm w-100">
-                        <i class="fa-solid fa-plus"></i> <?php esc_html_e( 'Salva Documento', 'vc-colonna-ai-assistant' ); ?>
+                        <i class="fa-solid fa-plus"></i> <?php esc_html_e( 'Salva Documento', 'vcolonna-ai-assistant' ); ?>
                     </button>
 
                     <div id="vcai-kb-result" class="mt-2 small" style="display:none;"></div>
@@ -40,28 +40,28 @@
             <!-- Impostazioni -->
             <div class="card mt-4">
                 <div class="card-body">
-                    <h2 class="card-title fs-6 pb-2 border-bottom"><i class="fa-solid fa-gear"></i> <?php esc_html_e( 'Impostazioni', 'vc-colonna-ai-assistant' ); ?></h2>
+                    <h2 class="card-title fs-6 pb-2 border-bottom"><i class="fa-solid fa-gear"></i> <?php esc_html_e( 'Impostazioni', 'vcolonna-ai-assistant' ); ?></h2>
                     <form method="post" action="options.php">
                         <?php settings_fields( 'vcai_knowledge_settings' ); ?>
                         <table class="form-table">
                             <tr>
-                                <th><?php esc_html_e( 'Knowledge Base attiva', 'vc-colonna-ai-assistant' ); ?></th>
+                                <th><?php esc_html_e( 'Knowledge Base attiva', 'vcolonna-ai-assistant' ); ?></th>
                                 <td>
                                     <label>
                                         <input type="checkbox" name="vcai_knowledge_enabled" value="1" <?php checked( get_option( 'vcai_knowledge_enabled', 1 ) ); ?> />
-                                        <?php esc_html_e( 'Usa la knowledge base come contesto nella chat', 'vc-colonna-ai-assistant' ); ?>
+                                        <?php esc_html_e( 'Usa la knowledge base come contesto nella chat', 'vcolonna-ai-assistant' ); ?>
                                     </label>
                                 </td>
                             </tr>
                             <tr>
-                                <th><?php esc_html_e( 'Limite contesto (caratteri)', 'vc-colonna-ai-assistant' ); ?></th>
+                                <th><?php esc_html_e( 'Limite contesto (caratteri)', 'vcolonna-ai-assistant' ); ?></th>
                                 <td>
                                     <input type="number" name="vcai_knowledge_max_chars" value="<?php echo esc_attr( get_option( 'vcai_knowledge_max_chars', 1500 ) ); ?>" min="500" max="5000" class="small-text" />
-                                    <p class="description"><?php esc_html_e( 'Massimo caratteri di knowledge base iniettati nel prompt. Più alto = più contesto ma più token.', 'vc-colonna-ai-assistant' ); ?></p>
+                                    <p class="description"><?php esc_html_e( 'Massimo caratteri di knowledge base iniettati nel prompt. Più alto = più contesto ma più token.', 'vcolonna-ai-assistant' ); ?></p>
                                 </td>
                             </tr>
                         </table>
-                        <?php submit_button( __( 'Salva', 'vc-colonna-ai-assistant' ), 'secondary', 'submit', false ); ?>
+                        <?php submit_button( __( 'Salva', 'vcolonna-ai-assistant' ), 'secondary', 'submit', false ); ?>
                     </form>
                 </div>
             </div>
@@ -72,38 +72,38 @@
             <!-- RAG: indicizzazione post -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <h2 class="card-title fs-6 pb-2 border-bottom"><i class="fa-solid fa-database"></i> <?php esc_html_e( 'RAG — Indicizzazione Contenuti', 'vc-colonna-ai-assistant' ); ?></h2>
-                    <p class="text-muted small"><?php esc_html_e( 'Indicizza i post e le pagine del sito per permettere all\'AI di conoscere i tuoi contenuti esistenti.', 'vc-colonna-ai-assistant' ); ?></p>
+                    <h2 class="card-title fs-6 pb-2 border-bottom"><i class="fa-solid fa-database"></i> <?php esc_html_e( 'RAG — Indicizzazione Contenuti', 'vcolonna-ai-assistant' ); ?></h2>
+                    <p class="text-muted small"><?php esc_html_e( 'Indicizza i post e le pagine del sito per permettere all\'AI di conoscere i tuoi contenuti esistenti.', 'vcolonna-ai-assistant' ); ?></p>
                     <div class="d-flex align-items-center gap-3">
                         <button type="button" id="vcai-index-posts" class="btn btn-outline-primary btn-sm">
-                            <i class="fa-solid fa-arrows-rotate"></i> <?php esc_html_e( 'Indicizza tutti i post', 'vc-colonna-ai-assistant' ); ?>
+                            <i class="fa-solid fa-arrows-rotate"></i> <?php esc_html_e( 'Indicizza tutti i post', 'vcolonna-ai-assistant' ); ?>
                         </button>
                         <span class="text-muted small">
                             <?php
                             $vcai_indexed = Vcai_Knowledge::count_indexed_posts();
                             // translators: %d is the number of indexed posts
-                            echo esc_html( sprintf( __( '%d post attualmente indicizzati', 'vc-colonna-ai-assistant' ), $vcai_indexed ) );
+                            echo esc_html( sprintf( __( '%d post attualmente indicizzati', 'vcolonna-ai-assistant' ), $vcai_indexed ) );
                             ?>
                         </span>
                     </div>
                     <div id="vcai-index-result" class="mt-2 small" style="display:none;"></div>
-                    <p class="text-muted small mt-2 mb-0"><i class="fa-solid fa-circle-info"></i> <?php esc_html_e( 'I nuovi post vengono indicizzati automaticamente alla pubblicazione.', 'vc-colonna-ai-assistant' ); ?></p>
+                    <p class="text-muted small mt-2 mb-0"><i class="fa-solid fa-circle-info"></i> <?php esc_html_e( 'I nuovi post vengono indicizzati automaticamente alla pubblicazione.', 'vcolonna-ai-assistant' ); ?></p>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-body">
-                    <h2 class="card-title fs-6 pb-2 border-bottom"><i class="fa-solid fa-folder-open"></i> <?php esc_html_e( 'Documenti Caricati', 'vc-colonna-ai-assistant' ); ?></h2>
+                    <h2 class="card-title fs-6 pb-2 border-bottom"><i class="fa-solid fa-folder-open"></i> <?php esc_html_e( 'Documenti Caricati', 'vcolonna-ai-assistant' ); ?></h2>
 
                     <?php if ( empty( $documents ) ) : ?>
-                        <p class="text-muted small"><?php esc_html_e( 'Nessun documento caricato. Aggiungi il primo dalla sezione a sinistra.', 'vc-colonna-ai-assistant' ); ?></p>
+                        <p class="text-muted small"><?php esc_html_e( 'Nessun documento caricato. Aggiungi il primo dalla sezione a sinistra.', 'vcolonna-ai-assistant' ); ?></p>
                     <?php else : ?>
                         <table class="table table-striped table-hover mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th><?php esc_html_e( 'Documento', 'vc-colonna-ai-assistant' ); ?></th>
-                                    <th><?php esc_html_e( 'Frammenti', 'vc-colonna-ai-assistant' ); ?></th>
-                                    <th><?php esc_html_e( 'Data', 'vc-colonna-ai-assistant' ); ?></th>
+                                    <th><?php esc_html_e( 'Documento', 'vcolonna-ai-assistant' ); ?></th>
+                                    <th><?php esc_html_e( 'Frammenti', 'vcolonna-ai-assistant' ); ?></th>
+                                    <th><?php esc_html_e( 'Data', 'vcolonna-ai-assistant' ); ?></th>
                                     <th></th>
                                 </tr>
                             </thead>
