@@ -1,27 +1,27 @@
 jQuery(function ($) {
 
-    const $toggle   = $('#jeenie-chat-toggle');
-    const $window   = $('#jeenie-chat-window');
-    const $messages = $('#jeenie-chat-messages');
-    const $input    = $('#jeenie-chat-input');
-    const $send     = $('#jeenie-chat-send');
-    const $main     = $('#jeenie-chat-main');
-    const $histPanel = $('#jeenie-history-panel');
-    const $histList  = $('#jeenie-history-list');
+    const $toggle   = $('#vcai-chat-toggle');
+    const $window   = $('#vcai-chat-window');
+    const $messages = $('#vcai-chat-messages');
+    const $input    = $('#vcai-chat-input');
+    const $send     = $('#vcai-chat-send');
+    const $main     = $('#vcai-chat-main');
+    const $histPanel = $('#vcai-history-panel');
+    const $histList  = $('#vcai-history-list');
 
-    const STORAGE_KEY_MESSAGES = 'jeenie_messages';
-    const STORAGE_KEY_SESSION  = 'jeenie_session';
-    const STORAGE_KEY_CONV_ID  = 'jeenie_conv_id';
+    const STORAGE_KEY_MESSAGES = 'vcai_messages';
+    const STORAGE_KEY_SESSION  = 'vcai_session';
+    const STORAGE_KEY_CONV_ID  = 'vcai_conv_id';
 
     let currentConversationId = 0;
 
     // Session check
     var savedSession = sessionStorage.getItem(STORAGE_KEY_SESSION);
-    if (savedSession && savedSession !== jeenie_chat.session_id) {
+    if (savedSession && savedSession !== vcai_chat.session_id) {
         sessionStorage.removeItem(STORAGE_KEY_MESSAGES);
         sessionStorage.removeItem(STORAGE_KEY_CONV_ID);
     }
-    sessionStorage.setItem(STORAGE_KEY_SESSION, jeenie_chat.session_id);
+    sessionStorage.setItem(STORAGE_KEY_SESSION, vcai_chat.session_id);
 
     const toolLabels = {
         create_post:            '✅ Post creato',
@@ -54,13 +54,13 @@ jQuery(function ($) {
     $toggle.on('click', function () {
         const isOpen = $window.is(':visible');
         $window.toggle(!isOpen);
-        $('.jeenie-chat-icon').toggle(isOpen);
-        $('.jeenie-chat-close').toggle(!isOpen);
+        $('.vcai-chat-icon').toggle(isOpen);
+        $('.vcai-chat-close').toggle(!isOpen);
         if (!isOpen) { $input.focus(); scrollToBottom(); }
     });
 
     // ── Suggerimenti ──────────────────────────────────────────────
-    $(document).on('click', '.jeenie-suggestion', function () {
+    $(document).on('click', '.vcai-suggestion', function () {
         $input.val($(this).data('msg'));
         sendMessage();
     });
@@ -72,48 +72,48 @@ jQuery(function ($) {
     });
 
     // ── Nuova chat ────────────────────────────────────────────────
-    $('#jeenie-new-chat-btn').on('click', function () {
+    $('#vcai-new-chat-btn').on('click', function () {
         currentConversationId = 0;
         sessionStorage.removeItem(STORAGE_KEY_MESSAGES);
         sessionStorage.removeItem(STORAGE_KEY_CONV_ID);
         $messages.empty();
         appendMessage('Ciao! Sono il tuo assistente AI. Come posso aiutarti oggi?', 'ai');
-        $('.jeenie-chat-suggestions').show();
+        $('.vcai-chat-suggestions').show();
         $histPanel.hide();
         $main.show();
     });
 
     // ── Cronologia ────────────────────────────────────────────────
-    $('#jeenie-history-btn').on('click', function () {
+    $('#vcai-history-btn').on('click', function () {
         $main.hide();
         $histPanel.show();
         loadConversations();
     });
 
-    $('#jeenie-history-back').on('click', function () {
+    $('#vcai-history-back').on('click', function () {
         $histPanel.hide();
         $main.show();
     });
 
     // Click su conversazione
-    $(document).on('click', '.jeenie-conv-item', function () {
+    $(document).on('click', '.vcai-conv-item', function () {
         var convId = $(this).data('id');
         loadConversation(convId);
     });
 
     // Elimina conversazione
-    $(document).on('click', '.jeenie-conv-delete', function (e) {
+    $(document).on('click', '.vcai-conv-delete', function (e) {
         e.stopPropagation();
-        var convId = $(this).closest('.jeenie-conv-item').data('id');
+        var convId = $(this).closest('.vcai-conv-item').data('id');
         if (!confirm('Eliminare questa conversazione?')) return;
 
-        $.post(jeenie_chat.ajax_url, {
-            action: 'jeenie_delete_conversation',
-            nonce: jeenie_chat.nonce,
+        $.post(vcai_chat.ajax_url, {
+            action: 'vcai_delete_conversation',
+            nonce: vcai_chat.nonce,
             conversation_id: convId,
         }).done(function () {
             if (currentConversationId === convId) {
-                $('#jeenie-new-chat-btn').click();
+                $('#vcai-new-chat-btn').click();
             }
             loadConversations();
         });
@@ -121,9 +121,9 @@ jQuery(function ($) {
 
     function loadConversations() {
         $histList.html('<div class="text-center p-3 text-muted small"><i class="fa-solid fa-spinner fa-spin"></i></div>');
-        $.post(jeenie_chat.ajax_url, {
-            action: 'jeenie_get_conversations',
-            nonce: jeenie_chat.nonce,
+        $.post(vcai_chat.ajax_url, {
+            action: 'vcai_get_conversations',
+            nonce: vcai_chat.nonce,
         }).done(function (res) {
             if (!res.success || !res.data.length) {
                 $histList.html('<div class="text-center p-3 text-muted small">Nessuna conversazione.</div>');
@@ -131,12 +131,12 @@ jQuery(function ($) {
             }
             var html = '';
             res.data.forEach(function (c) {
-                var active = (c.id == currentConversationId) ? ' jeenie-conv-active' : '';
-                html += '<div class="jeenie-conv-item' + active + '" data-id="' + c.id + '">'
-                    + '<div class="jeenie-conv-title">' + escHtml(c.title) + '</div>'
-                    + '<div class="jeenie-conv-meta">'
+                var active = (c.id == currentConversationId) ? ' vcai-conv-active' : '';
+                html += '<div class="vcai-conv-item' + active + '" data-id="' + c.id + '">'
+                    + '<div class="vcai-conv-title">' + escHtml(c.title) + '</div>'
+                    + '<div class="vcai-conv-meta">'
                     + '<small>' + c.message_count + ' msg</small>'
-                    + '<button class="jeenie-conv-delete" title="Elimina"><i class="fa-solid fa-trash-can fa-xs"></i></button>'
+                    + '<button class="vcai-conv-delete" title="Elimina"><i class="fa-solid fa-trash-can fa-xs"></i></button>'
                     + '</div></div>';
             });
             $histList.html(html);
@@ -144,16 +144,16 @@ jQuery(function ($) {
     }
 
     function loadConversation(convId) {
-        $.post(jeenie_chat.ajax_url, {
-            action: 'jeenie_load_conversation',
-            nonce: jeenie_chat.nonce,
+        $.post(vcai_chat.ajax_url, {
+            action: 'vcai_load_conversation',
+            nonce: vcai_chat.nonce,
             conversation_id: convId,
         }).done(function (res) {
             if (!res.success) return;
 
             currentConversationId = convId;
             $messages.empty();
-            $('.jeenie-chat-suggestions').hide();
+            $('.vcai-chat-suggestions').hide();
 
             res.data.messages.forEach(function (m) {
                 appendMessage(m.content, m.role === 'user' ? 'user' : 'ai');
@@ -173,7 +173,7 @@ jQuery(function ($) {
         var msg = $input.val().trim();
         if (!msg) return;
 
-        $('.jeenie-chat-suggestions').hide();
+        $('.vcai-chat-suggestions').hide();
         appendMessage(msg, 'user');
         $input.val('').prop('disabled', true);
         $send.prop('disabled', true);
@@ -182,8 +182,8 @@ jQuery(function ($) {
 
         // Costruisci URL SSE con parametri GET
         var params = new URLSearchParams({
-            action: 'jeenie_chat_stream',
-            nonce: jeenie_chat.nonce,
+            action: 'vcai_chat_stream',
+            nonce: vcai_chat.nonce,
             message: msg,
             conversation_id: currentConversationId,
         });
@@ -192,7 +192,7 @@ jQuery(function ($) {
         var pageContext = getPageContext();
         if (pageContext) params.set('page_context', pageContext);
 
-        var url = jeenie_chat.ajax_url + '?' + params.toString();
+        var url = vcai_chat.ajax_url + '?' + params.toString();
 
         var $aiMsg = null;
         var fullText = '';
@@ -246,7 +246,7 @@ jQuery(function ($) {
                         if (data.chunk) {
                             fullText += data.chunk;
                             if (!$aiMsg) {
-                                $aiMsg = $('<div>').addClass('jeenie-chat-message jeenie-chat-message--ai');
+                                $aiMsg = $('<div>').addClass('vcai-chat-message vcai-chat-message--ai');
                                 $messages.append($aiMsg);
                             }
                             if (typeof marked !== 'undefined') {
@@ -278,7 +278,7 @@ jQuery(function ($) {
 
     // ── Helpers ───────────────────────────────────────────────────
     function appendMessage(text, type) {
-        var $msg = $('<div>').addClass('jeenie-chat-message jeenie-chat-message--' + type);
+        var $msg = $('<div>').addClass('vcai-chat-message vcai-chat-message--' + type);
         if (type === 'ai' && typeof marked !== 'undefined') {
             $msg.html(marked.parse(text));
         } else {
@@ -290,7 +290,7 @@ jQuery(function ($) {
     }
 
     function appendBadge(html) {
-        var $badge = $('<div class="jeenie-action-badge">').html(html);
+        var $badge = $('<div class="vcai-action-badge">').html(html);
         $messages.append($badge);
         scrollToBottom();
     }
@@ -331,13 +331,13 @@ jQuery(function ($) {
     }
 
     function showToast(label, editUrl) {
-        var html = '<div class="jeenie-toast-content">' + label;
+        var html = '<div class="vcai-toast-content">' + label;
         if (editUrl) html += ' <a href="' + editUrl + '" target="_blank">Apri nell\'editor →</a>';
-        html += '</div><button class="jeenie-toast-close">&times;</button>';
-        var $toast = $('<div class="jeenie-toast">').html(html).appendTo('body');
-        $toast.find('.jeenie-toast-close').on('click', function () { $toast.remove(); });
-        setTimeout(function () { $toast.addClass('jeenie-toast--visible'); }, 10);
-        setTimeout(function () { $toast.removeClass('jeenie-toast--visible'); setTimeout(function () { $toast.remove(); }, 300); }, 5000);
+        html += '</div><button class="vcai-toast-close">&times;</button>';
+        var $toast = $('<div class="vcai-toast">').html(html).appendTo('body');
+        $toast.find('.vcai-toast-close').on('click', function () { $toast.remove(); });
+        setTimeout(function () { $toast.addClass('vcai-toast--visible'); }, 10);
+        setTimeout(function () { $toast.removeClass('vcai-toast--visible'); setTimeout(function () { $toast.remove(); }, 300); }, 5000);
     }
 
     // ── Persistenza sessionStorage ────────────────────────────────
@@ -352,9 +352,9 @@ jQuery(function ($) {
         var ordered = [];
         $messages.children().each(function () {
             var $el = $(this);
-            if ($el.hasClass('jeenie-chat-message--user'))     ordered.push({ type: 'user', text: $el.text() });
-            else if ($el.hasClass('jeenie-chat-message--ai'))  ordered.push({ type: 'ai', html: $el.html() });
-            else if ($el.hasClass('jeenie-action-badge'))      ordered.push({ type: 'badge', html: $el.html() });
+            if ($el.hasClass('vcai-chat-message--user'))     ordered.push({ type: 'user', text: $el.text() });
+            else if ($el.hasClass('vcai-chat-message--ai'))  ordered.push({ type: 'ai', html: $el.html() });
+            else if ($el.hasClass('vcai-action-badge'))      ordered.push({ type: 'badge', html: $el.html() });
         });
         sessionStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(ordered));
     }
@@ -370,12 +370,12 @@ jQuery(function ($) {
             if (!parsed.length) return;
 
             $messages.empty();
-            $('.jeenie-chat-suggestions').hide();
+            $('.vcai-chat-suggestions').hide();
             parsed.forEach(function (m) {
                 if (m.type === 'badge') {
                     appendBadge(m.html);
                 } else if (m.type === 'ai' && m.html) {
-                    var $msg = $('<div>').addClass('jeenie-chat-message jeenie-chat-message--ai').html(m.html);
+                    var $msg = $('<div>').addClass('vcai-chat-message vcai-chat-message--ai').html(m.html);
                     $messages.append($msg);
                 } else {
                     appendMessage(m.text, m.type);
