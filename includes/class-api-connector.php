@@ -156,12 +156,12 @@ abstract class Vcai_API_Connector {
         // Mappa codici HTTP a messaggi utente
         $user_message = $message;
         switch ( $code ) {
-            case 401: $user_message = __( 'API key non valida. Controlla la chiave nelle impostazioni di VColonna AI.', 'vc-colonna-ai-assistant' ); break;
-            case 403: $user_message = __( 'Accesso negato dall\'API. Verifica i permessi della tua API key.', 'vc-colonna-ai-assistant' ); break;
-            case 429: $user_message = __( 'Quota API esaurita o troppe richieste. Riprova tra qualche minuto.', 'vc-colonna-ai-assistant' ); break;
+            case 401: $user_message = __( 'API key non valida. Controlla la chiave nelle impostazioni di VColonna AI.', 'vcolonna-ai-assistant' ); break;
+            case 403: $user_message = __( 'Accesso negato dall\'API. Verifica i permessi della tua API key.', 'vcolonna-ai-assistant' ); break;
+            case 429: $user_message = __( 'Quota API esaurita o troppe richieste. Riprova tra qualche minuto.', 'vcolonna-ai-assistant' ); break;
             case 500:
             case 502:
-            case 503: $user_message = __( 'Il servizio AI è temporaneamente non disponibile. Riprova tra poco.', 'vc-colonna-ai-assistant' ); break;
+            case 503: $user_message = __( 'Il servizio AI è temporaneamente non disponibile. Riprova tra poco.', 'vcolonna-ai-assistant' ); break;
         }
 
         return [
