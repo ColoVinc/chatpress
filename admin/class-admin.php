@@ -39,7 +39,7 @@ class Vcai_Admin {
         if ( ! get_transient( 'vcai_activated' ) ) return;
         delete_transient( 'vcai_activated' );
         $url = admin_url( 'admin.php?page=vcai' );
-        echo '<div class="notice notice-success is-dismissible"><p><strong>🤖 ' . esc_html__( 'VColonna AI attivato!', 'vc-colonna-ai-assistant' ) . '</strong> <a href="' . esc_url( $url ) . '">' . esc_html__( 'Configura la tua API key', 'vc-colonna-ai-assistant' ) . '</a> ' . esc_html__( 'per iniziare.', 'vc-colonna-ai-assistant' ) . '</p></div>';
+        echo '<div class="notice notice-success is-dismissible"><p><strong>🤖 ' . esc_html__( 'VColonna AI attivato!', 'vcolonna-ai-assistant' ) . '</strong> <a href="' . esc_url( $url ) . '">' . esc_html__( 'Configura la tua API key', 'vcolonna-ai-assistant' ) . '</a> ' . esc_html__( 'per iniziare.', 'vcolonna-ai-assistant' ) . '</p></div>';
     }
 
     /**
@@ -55,7 +55,7 @@ class Vcai_Admin {
         if ( ! empty( $key ) ) return;
 
         $url = admin_url( 'admin.php?page=vcai' );
-        echo '<div class="notice notice-warning is-dismissible"><p><strong>🤖 VColonna AI:</strong> ' . esc_html__( 'API key non configurata.', 'vc-colonna-ai-assistant' ) . ' <a href="' . esc_url( $url ) . '">' . esc_html__( 'Vai alle impostazioni', 'vc-colonna-ai-assistant' ) . '</a>.</p></div>';
+        echo '<div class="notice notice-warning is-dismissible"><p><strong>🤖 VColonna AI:</strong> ' . esc_html__( 'API key non configurata.', 'vcolonna-ai-assistant' ) . ' <a href="' . esc_url( $url ) . '">' . esc_html__( 'Vai alle impostazioni', 'vcolonna-ai-assistant' ) . '</a>.</p></div>';
     }
 
     /**
@@ -260,12 +260,12 @@ class Vcai_Admin {
         check_ajax_referer( 'vcai_nonce', 'nonce' );
 
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_send_json_error( __( 'Permessi insufficienti.', 'vc-colonna-ai-assistant' ) );
+            wp_send_json_error( __( 'Permessi insufficienti.', 'vcolonna-ai-assistant' ) );
         }
 
         $connector = self::get_connector();
         if ( ! $connector ) {
-            wp_send_json_error( __( 'API key non configurata.', 'vc-colonna-ai-assistant' ) );
+            wp_send_json_error( __( 'API key non configurata.', 'vcolonna-ai-assistant' ) );
         }
 
         $response = $connector->generate( 'Rispondi solo con: "VColonna AI connesso correttamente!"' );
@@ -426,7 +426,7 @@ class Vcai_Admin {
         $form_fields['vcai_alt'] = [
             'label' => '',
             'input' => 'html',
-            'html'  => '<button type="button" class="button vcai-generate-alt" data-id="' . esc_attr( $post->ID ) . '">🤖 ' . esc_html__( 'Genera Alt Text con AI', 'vc-colonna-ai-assistant' ) . '</button>',
+            'html'  => '<button type="button" class="button vcai-generate-alt" data-id="' . esc_attr( $post->ID ) . '">🤖 ' . esc_html__( 'Genera Alt Text con AI', 'vcolonna-ai-assistant' ) . '</button>',
         ];
 
         return $form_fields;
