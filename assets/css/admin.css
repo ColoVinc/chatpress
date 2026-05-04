@@ -1,5 +1,5 @@
 /* ================================
-   Jeenie — Admin CSS
+   VColonna AI — Admin CSS
    Solo stili custom non coperti da Bootstrap
    ================================ */
 
@@ -7,19 +7,19 @@
 .card {
     max-width: inherit !important;
 }
-.jeenie-header {
+.vcai-header {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
 }
 
 /* Stat cards (custom colors) */
-.jeenie-stat-number {
+.vcai-stat-number {
     display: block;
     font-size: 32px;
     font-weight: 700;
     color: #0f3460;
     margin-bottom: 10px;
 }
-.jeenie-stat-label {
+.vcai-stat-label {
     font-size: 12px;
     color: #757575;
     text-transform: uppercase;
@@ -27,9 +27,9 @@
 }
 
 /* Test API result colors (usato da admin.js) */
-#jeenie-test-result {
+#vcai-test-result {
     font-size: 13px;
     font-weight: 500;
 }
-#jeenie-test-result.success { color: #00a32a; }
-#jeenie-test-result.error   { color: #d63638; }
+#vcai-test-result.success { color: #00a32a; }
+#vcai-test-result.error   { color: #d63638; }
