@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Classe Metabox — aggiunge il pannello AI nell'editor post/pagina
  */
-class Jeenie_Metabox {
+class Vcai_Metabox {
 
     private static $instance = null;
 
@@ -18,16 +18,16 @@ class Jeenie_Metabox {
     private function __construct() {
         add_action( 'add_meta_boxes', [ $this, 'register_metabox' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
-        add_action( 'wp_ajax_jeenie_generate_content', [ $this, 'ajax_generate_content' ] );
-        add_action( 'wp_ajax_jeenie_generate_seo', [ $this, 'ajax_generate_seo' ] );
+        add_action( 'wp_ajax_vcai_generate_content', [ $this, 'ajax_generate_content' ] );
+        add_action( 'wp_ajax_vcai_generate_seo', [ $this, 'ajax_generate_seo' ] );
     }
 
     public function register_metabox() {
         $screens = get_post_types( [ 'public' => true ], 'names' );
         foreach ( $screens as $screen ) {
             add_meta_box(
-                'jeenie_metabox',
-                '🤖 Jeenie — Assistente AI',
+                'vcai_metabox',
+                '🤖 VColonna AI — Assistente AI',
                 [ $this, 'render_metabox' ],
                 $screen,
                 'side',
@@ -40,28 +40,28 @@ class Jeenie_Metabox {
         if ( ! in_array( $hook, [ 'post.php', 'post-new.php' ] ) ) return;
 
         wp_enqueue_script(
-            'jeenie-metabox',
-            JEENIE_PLUGIN_URL . 'assets/js/metabox.js',
+            'vcai-metabox',
+            VCAI_PLUGIN_URL . 'assets/js/metabox.js',
             [ 'jquery', 'wp-blocks', 'wp-data', 'wp-block-editor' ],
-            JEENIE_VERSION,
+            VCAI_VERSION,
             true
         );
 
-        wp_localize_script( 'jeenie-metabox', 'jeenie', [
+        wp_localize_script( 'vcai-metabox', 'vcai', [
             'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'nonce'    => wp_create_nonce( 'jeenie_nonce' ),
+            'nonce'    => wp_create_nonce( 'vcai_nonce' ),
         ]);
     }
 
     public function render_metabox( $post ) {
-        require_once JEENIE_PLUGIN_DIR . 'templates/metabox.php';
+        require_once VCAI_PLUGIN_DIR . 'templates/metabox.php';
     }
 
     /**
      * AJAX: genera bozza articolo
      */
     public function ajax_generate_content() {
-        check_ajax_referer( 'jeenie_nonce', 'nonce' );
+        check_ajax_referer( 'vcai_nonce', 'nonce' );
         if ( ! current_user_can( 'edit_posts' ) ) wp_send_json_error( 'Permessi insufficienti.' );
 
         $title    = sanitize_text_field( wp_unslash( $_POST['title'] ?? '' ) );
@@ -70,12 +70,12 @@ class Jeenie_Metabox {
 
         if ( empty( $title ) ) wp_send_json_error( 'Inserisci un titolo.' );
 
-        $connector = Jeenie_Admin::get_connector();
-        if ( ! $connector ) wp_send_json_error( 'API key non configurata. Vai in Jeenie → Impostazioni.' );
+        $connector = Vcai_Admin::get_connector();
+        if ( ! $connector ) wp_send_json_error( 'API key non configurata. Vai in VColonna AI → Impostazioni.' );
 
-        if ( Jeenie_Admin::is_rate_limited() ) wp_send_json_error( 'Hai raggiunto il limite di richieste orarie. Riprova più tardi.' );
+        if ( Vcai_Admin::is_rate_limited() ) wp_send_json_error( 'Hai raggiunto il limite di richieste orarie. Riprova più tardi.' );
 
-        $context = Jeenie_Admin::get_site_context();
+        $context = Vcai_Admin::get_site_context();
         $prompt  = "$context\n\n";
         $prompt .= "Scrivi una bozza completa per un " . ( $type === 'page' ? 'pagina web' : 'articolo di blog' );
         $prompt .= " con il titolo: \"$title\".";
@@ -95,7 +95,7 @@ class Jeenie_Metabox {
      * AJAX: genera meta SEO
      */
     public function ajax_generate_seo() {
-        check_ajax_referer( 'jeenie_nonce', 'nonce' );
+        check_ajax_referer( 'vcai_nonce', 'nonce' );
         if ( ! current_user_can( 'edit_posts' ) ) wp_send_json_error( 'Permessi insufficienti.' );
 
         $title   = sanitize_text_field( wp_unslash( $_POST['title'] ?? '' ) );
@@ -103,12 +103,12 @@ class Jeenie_Metabox {
 
         if ( empty( $title ) && empty( $content ) ) wp_send_json_error( 'Nessun contenuto da analizzare.' );
 
-        $connector = Jeenie_Admin::get_connector();
+        $connector = Vcai_Admin::get_connector();
         if ( ! $connector ) wp_send_json_error( 'API key non configurata.' );
 
-        if ( Jeenie_Admin::is_rate_limited() ) wp_send_json_error( 'Hai raggiunto il limite di richieste orarie. Riprova più tardi.' );
+        if ( Vcai_Admin::is_rate_limited() ) wp_send_json_error( 'Hai raggiunto il limite di richieste orarie. Riprova più tardi.' );
 
-        $context = Jeenie_Admin::get_site_context();
+        $context = Vcai_Admin::get_site_context();
         $prompt  = "$context\n\n";
         $prompt .= "Basandoti su questo contenuto:\nTitolo: $title\n";
         if ( $content ) $prompt .= "Testo: " . substr( $content, 0, 500 ) . "...\n";
