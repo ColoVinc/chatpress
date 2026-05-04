@@ -1,19 +1,19 @@
 /* ================================
-   Jeenie — Chat Widget CSS
+   VColonna AI — Chat Widget CSS
    Nessuna dipendenza da Bootstrap
    ================================ */
 
 /* Widget positioning */
-.jeenie-chat-widget {
+.vcai-chat-widget {
     position: fixed;
     bottom: 24px;
     right: 24px;
     z-index: 99999;
 }
-.jeenie-chat-widget * { box-sizing: border-box; }
+.vcai-chat-widget * { box-sizing: border-box; }
 
 /* Toggle button */
-.jeenie-chat-toggle {
+.vcai-chat-toggle {
     width: 56px;
     height: 56px;
     border-radius: 50%;
@@ -28,13 +28,13 @@
     box-shadow: 0 4px 16px rgba(0,0,0,0.25);
     transition: transform 0.2s, box-shadow 0.2s;
 }
-.jeenie-chat-toggle:hover {
+.vcai-chat-toggle:hover {
     transform: scale(1.08);
     box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 
 /* Chat window */
-.jeenie-chat-window {
+.vcai-chat-window {
     position: absolute;
     bottom: 68px;
     right: 0;
@@ -46,12 +46,12 @@
     display: none;
     flex-direction: column;
 }
-.jeenie-chat-window[style*="block"] {
+.vcai-chat-window[style*="block"] {
     display: flex !important;
 }
 
 /* Header */
-.jeenie-chat-header {
+.vcai-chat-header {
     background: linear-gradient(135deg, #1a1a2e, #0f3460);
     color: #fff;
     display: flex;
@@ -59,15 +59,15 @@
     align-items: center;
     padding: 8px 16px;
 }
-.jeenie-chat-header-title {
+.vcai-chat-header-title {
     font-weight: 600;
     font-size: 13px;
 }
-.jeenie-chat-header-actions {
+.vcai-chat-header-actions {
     display: flex;
     gap: 8px;
 }
-.jeenie-header-btn {
+.vcai-header-btn {
     background: none;
     border: 0;
     color: rgba(255,255,255,0.7);
@@ -75,10 +75,10 @@
     font-size: 14px;
     padding: 2px 4px;
 }
-.jeenie-header-btn:hover { color: #fff; }
+.vcai-header-btn:hover { color: #fff; }
 
 /* Messages area */
-.jeenie-chat-messages {
+.vcai-chat-messages {
     max-height: 300px;
     overflow-y: auto;
     flex: 1;
@@ -89,7 +89,7 @@
 }
 
 /* Message bubbles */
-.jeenie-chat-message {
+.vcai-chat-message {
     padding: 8px 12px;
     border-radius: 10px;
     font-size: 13px;
@@ -97,19 +97,19 @@
     max-width: 85%;
     word-wrap: break-word;
 }
-.jeenie-chat-message--ai {
+.vcai-chat-message--ai {
     background: #f0f4ff;
     color: #1a1a2e;
     align-self: flex-start;
     border-bottom-left-radius: 3px;
 }
-.jeenie-chat-message--user {
+.vcai-chat-message--user {
     background: #0f3460;
     color: #fff;
     align-self: flex-end;
     border-bottom-right-radius: 3px;
 }
-.jeenie-chat-message--loading {
+.vcai-chat-message--loading {
     background: #f0f4ff;
     color: #888;
     align-self: flex-start;
@@ -117,14 +117,14 @@
 }
 
 /* Suggestions */
-.jeenie-chat-suggestions {
+.vcai-chat-suggestions {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
     border-top: 1px solid #e0e0e0;
     padding: 8px;
 }
-.jeenie-suggestion {
+.vcai-suggestion {
     background: #f5f5f5;
     border: 1px solid #ddd;
     border-radius: 50rem;
@@ -133,17 +133,17 @@
     cursor: pointer;
     transition: background 0.15s;
 }
-.jeenie-suggestion:hover { background: #e8eaf6; }
+.vcai-suggestion:hover { background: #e8eaf6; }
 
 /* Input area */
-.jeenie-chat-input-wrap {
+.vcai-chat-input-wrap {
     display: flex;
     gap: 8px;
     border-top: 1px solid #e0e0e0;
     padding: 8px;
     align-items: flex-end;
 }
-.jeenie-chat-textarea {
+.vcai-chat-textarea {
     flex: 1;
     padding: 6px 10px;
     font-size: 13px;
@@ -153,13 +153,13 @@
     resize: none;
     font-family: inherit;
 }
-.jeenie-chat-textarea:focus {
+.vcai-chat-textarea:focus {
     border-color: #0f3460;
     box-shadow: 0 0 0 2px rgba(15,52,96,0.15);
 }
 
 /* Send button */
-.jeenie-btn-send {
+.vcai-btn-send {
     background: #0f3460;
     color: #fff;
     width: 36px;
@@ -170,22 +170,22 @@
     flex-shrink: 0;
     font-size: 14px;
 }
-.jeenie-btn-send:hover { background: #533483; }
+.vcai-btn-send:hover { background: #533483; }
 
 /* Markdown inside AI messages */
-.jeenie-chat-message--ai p { margin: 0 0 8px; }
-.jeenie-chat-message--ai p:last-child { margin-bottom: 0; }
-.jeenie-chat-message--ai ul,
-.jeenie-chat-message--ai ol { margin: 4px 0 8px; padding-left: 18px; }
-.jeenie-chat-message--ai li { margin-bottom: 2px; }
-.jeenie-chat-message--ai strong { font-weight: 600; }
-.jeenie-chat-message--ai code {
+.vcai-chat-message--ai p { margin: 0 0 8px; }
+.vcai-chat-message--ai p:last-child { margin-bottom: 0; }
+.vcai-chat-message--ai ul,
+.vcai-chat-message--ai ol { margin: 4px 0 8px; padding-left: 18px; }
+.vcai-chat-message--ai li { margin-bottom: 2px; }
+.vcai-chat-message--ai strong { font-weight: 600; }
+.vcai-chat-message--ai code {
     background: #e2e6f0;
     padding: 1px 5px;
     border-radius: 3px;
     font-size: 12px;
 }
-.jeenie-chat-message--ai pre {
+.vcai-chat-message--ai pre {
     background: #1a1a2e;
     color: #e0e0e0;
     padding: 8px 10px;
@@ -194,23 +194,23 @@
     font-size: 11px;
     margin: 6px 0;
 }
-.jeenie-chat-message--ai pre code {
+.vcai-chat-message--ai pre code {
     background: none;
     padding: 0;
     color: inherit;
 }
-.jeenie-chat-message--ai a {
+.vcai-chat-message--ai a {
     color: #0f3460;
     text-decoration: underline;
 }
-.jeenie-chat-message--ai h1,
-.jeenie-chat-message--ai h2,
-.jeenie-chat-message--ai h3 {
+.vcai-chat-message--ai h1,
+.vcai-chat-message--ai h2,
+.vcai-chat-message--ai h3 {
     font-size: 13px;
     font-weight: 700;
     margin: 8px 0 4px;
 }
-.jeenie-chat-message--ai blockquote {
+.vcai-chat-message--ai blockquote {
     border-left: 3px solid #533483;
     margin: 6px 0;
     padding: 4px 10px;
@@ -219,7 +219,7 @@
 }
 
 /* Action badge */
-.jeenie-action-badge {
+.vcai-action-badge {
     background: #e8f5e9;
     border: 1px solid #a5d6a7;
     border-radius: 6px;
@@ -230,15 +230,15 @@
     text-align: center;
     margin: 2px 0;
 }
-.jeenie-action-badge a { color: #1b5e20; font-weight: 600; }
+.vcai-action-badge a { color: #1b5e20; font-weight: 600; }
 
 /* History panel */
-.jeenie-history-panel {
+.vcai-history-panel {
     display: flex;
     flex-direction: column;
     height: 100%;
 }
-.jeenie-history-header {
+.vcai-history-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -247,29 +247,29 @@
     font-weight: 600;
     font-size: 13px;
 }
-.jeenie-history-list {
+.vcai-history-list {
     flex: 1;
     overflow-y: auto;
     max-height: 350px;
 }
-.jeenie-conv-item {
+.vcai-conv-item {
     padding: 10px 14px;
     border-bottom: 1px solid #f0f0f0;
     cursor: pointer;
     transition: background 0.15s;
 }
-.jeenie-conv-item:hover { background: #f5f7ff; }
-.jeenie-conv-active { background: #e8eaf6; }
-.jeenie-conv-meta {
+.vcai-conv-item:hover { background: #f5f7ff; }
+.vcai-conv-active { background: #e8eaf6; }
+.vcai-conv-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-.jeenie-conv-meta small {
+.vcai-conv-meta small {
     color: #6c757d;
     font-size: 12px;
 }
-.jeenie-conv-delete {
+.vcai-conv-delete {
     background: none;
     border: 0;
     color: #999;
@@ -277,8 +277,8 @@
     padding: 2px 4px;
     font-size: 12px;
 }
-.jeenie-conv-delete:hover { color: #d63638; }
-.jeenie-conv-title {
+.vcai-conv-delete:hover { color: #d63638; }
+.vcai-conv-title {
     font-size: 13px;
     font-weight: 500;
     white-space: nowrap;
@@ -288,7 +288,7 @@
 }
 
 /* Toast notification */
-.jeenie-toast {
+.vcai-toast {
     position: fixed;
     top: 42px;
     right: 20px;
@@ -303,18 +303,18 @@
     transform: translateX(20px);
     transition: opacity 0.3s, transform 0.3s;
 }
-.jeenie-toast--visible {
+.vcai-toast--visible {
     opacity: 1;
     transform: translateX(0);
 }
-.jeenie-toast a {
+.vcai-toast a {
     color: #90caf9;
     text-decoration: none;
     font-weight: 600;
     margin-left: 6px;
 }
-.jeenie-toast a:hover { text-decoration: underline; }
-.jeenie-toast-close {
+.vcai-toast a:hover { text-decoration: underline; }
+.vcai-toast-close {
     position: absolute;
     top: 8px;
     right: 12px;
@@ -325,21 +325,21 @@
     cursor: pointer;
     line-height: 1;
 }
-.jeenie-toast-close:hover { color: #fff; }
+.vcai-toast-close:hover { color: #fff; }
 
 /* ================================
    Metabox CSS
    ================================ */
-.jeenie-metabox { font-size: 13px; }
+.vcai-metabox { font-size: 13px; }
 
-.jeenie-mb-tabs {
+.vcai-mb-tabs {
     display: flex;
     gap: 4px;
     margin-bottom: 12px;
     border-bottom: 2px solid #f0f0f0;
     padding-bottom: 8px;
 }
-.jeenie-tab {
+.vcai-tab {
     background: none;
     border: 1px solid #ddd;
     border-radius: 6px 6px 0 0;
@@ -349,35 +349,35 @@
     color: #555;
     transition: all 0.15s;
 }
-.jeenie-tab.active {
+.vcai-tab.active {
     background: #0f3460;
     color: #fff;
     border-color: #0f3460;
 }
 
-.jeenie-tab-content { display: none; }
-.jeenie-tab-content.active { display: block; }
+.vcai-tab-content { display: none; }
+.vcai-tab-content.active { display: block; }
 
-.jeenie-mb-field { margin-bottom: 10px; }
-.jeenie-mb-field label {
+.vcai-mb-field { margin-bottom: 10px; }
+.vcai-mb-field label {
     display: block;
     font-weight: 600;
     margin-bottom: 4px;
     font-size: 12px;
     color: #444;
 }
-.jeenie-mb-field input { width: 100%; box-sizing: border-box; }
+.vcai-mb-field input { width: 100%; box-sizing: border-box; }
 
-.jeenie-btn-full { width: 100%; text-align: center; margin-top: 4px; }
+.vcai-btn-full { width: 100%; text-align: center; margin-top: 4px; }
 
-.jeenie-result {
+.vcai-result {
     margin-top: 12px;
     background: #f9f9f9;
     border: 1px solid #e0e0e0;
     border-radius: 6px;
     padding: 10px;
 }
-.jeenie-result-text {
+.vcai-result-text {
     font-size: 12px;
     color: #333;
     line-height: 1.5;
@@ -387,16 +387,16 @@
     white-space: pre-wrap;
 }
 
-.jeenie-seo-field { margin-bottom: 10px; }
-.jeenie-seo-field label {
+.vcai-seo-field { margin-bottom: 10px; }
+.vcai-seo-field label {
     display: flex;
     justify-content: space-between;
     font-size: 12px;
     margin-bottom: 4px;
 }
-.jeenie-char-count { color: #888; font-weight: normal; }
+.vcai-char-count { color: #888; font-weight: normal; }
 
-.jeenie-loading {
+.vcai-loading {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -405,7 +405,7 @@
     color: #666;
 }
 
-.jeenie-error {
+.vcai-error {
     margin-top: 10px;
     font-size: 12px;
     padding: 8px 10px;
