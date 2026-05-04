@@ -2,19 +2,19 @@
 <div class="wrap vcai-settings">
 
     <div class="vcai-header rounded-3 mb-4 d-flex align-items-center gap-3 p-4">
-        <h1 class="text-white m-0 fs-4"><i class="fa-solid fa-puzzle-piece"></i> <?php esc_html_e( 'VColonna AI — Componenti', 'vc-colonna-ai-assistant' ); ?></h1>
+        <h1 class="text-white m-0 fs-4"><i class="fa-solid fa-puzzle-piece"></i> <?php esc_html_e( 'VColonna AI — Componenti', 'vcolonna-ai-assistant' ); ?></h1>
     </div>
 
     <div class="alert alert-info small mb-4" style="border-left:4px solid #0f3460;background:#f0f4ff;padding:12px 16px;border-radius:4px;">
         <i class="fa-solid fa-circle-info"></i>
-        <?php esc_html_e( 'Per la generazione dei componenti si consiglia di utilizzare i modelli di Google Gemini, Anthropic Claude o OpenAI per ottenere risultati migliori. I modelli gratuiti (Groq) potrebbero generare componenti incompleti o con errori.', 'vc-colonna-ai-assistant' ); ?>
+        <?php esc_html_e( 'Per la generazione dei componenti si consiglia di utilizzare i modelli di Google Gemini, Anthropic Claude o OpenAI per ottenere risultati migliori. I modelli gratuiti (Groq) potrebbero generare componenti incompleti o con errori.', 'vcolonna-ai-assistant' ); ?>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <p class="text-muted small m-0"><?php esc_html_e( 'Componenti generati dall\'AI per il tuo page builder. Chiedi nella chat di creare un componente.', 'vc-colonna-ai-assistant' ); ?></p>
+        <p class="text-muted small m-0"><?php esc_html_e( 'Componenti generati dall\'AI per il tuo page builder. Chiedi nella chat di creare un componente.', 'vcolonna-ai-assistant' ); ?></p>
         <?php if ( ! empty( $components ) ) : ?>
             <button type="button" id="vcai-deactivate-all" class="btn btn-outline-danger btn-sm">
-                <i class="fa-solid fa-power-off"></i> <?php esc_html_e( 'Disattiva Tutti', 'vc-colonna-ai-assistant' ); ?>
+                <i class="fa-solid fa-power-off"></i> <?php esc_html_e( 'Disattiva Tutti', 'vcolonna-ai-assistant' ); ?>
             </button>
         <?php endif; ?>
     </div>
@@ -23,8 +23,8 @@
         <div class="card">
             <div class="card-body text-center py-5">
                 <i class="fa-solid fa-puzzle-piece" style="font-size:48px;color:#ccc;"></i>
-                <p class="mt-3 text-muted"><?php esc_html_e( 'Nessun componente creato. Chiedi all\'AI nella chat di creare un componente per il tuo editor.', 'vc-colonna-ai-assistant' ); ?></p>
-                <p class="text-muted small"><?php esc_html_e( 'Esempio: "Crea un componente hero con titolo e immagine di sfondo per WPBakery"', 'vc-colonna-ai-assistant' ); ?></p>
+                <p class="mt-3 text-muted"><?php esc_html_e( 'Nessun componente creato. Chiedi all\'AI nella chat di creare un componente per il tuo editor.', 'vcolonna-ai-assistant' ); ?></p>
+                <p class="text-muted small"><?php esc_html_e( 'Esempio: "Crea un componente hero con titolo e immagine di sfondo per WPBakery"', 'vcolonna-ai-assistant' ); ?></p>
             </div>
         </div>
     <?php else : ?>
@@ -33,10 +33,10 @@
                 <table class="table table-striped table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th><?php esc_html_e( 'Componente', 'vc-colonna-ai-assistant' ); ?></th>
-                            <th><?php esc_html_e( 'Editor', 'vc-colonna-ai-assistant' ); ?></th>
-                            <th><?php esc_html_e( 'Stato', 'vc-colonna-ai-assistant' ); ?></th>
-                            <th><?php esc_html_e( 'Data', 'vc-colonna-ai-assistant' ); ?></th>
+                            <th><?php esc_html_e( 'Componente', 'vcolonna-ai-assistant' ); ?></th>
+                            <th><?php esc_html_e( 'Editor', 'vcolonna-ai-assistant' ); ?></th>
+                            <th><?php esc_html_e( 'Stato', 'vcolonna-ai-assistant' ); ?></th>
+                            <th><?php esc_html_e( 'Data', 'vcolonna-ai-assistant' ); ?></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -56,11 +56,11 @@
                                 </td>
                                 <td>
                                     <?php if ( $vcai_comp['status'] === 'active' ) : ?>
-                                        <span class="badge bg-success"><i class="fa-solid fa-check"></i> <?php esc_html_e( 'Attivo', 'vc-colonna-ai-assistant' ); ?></span>
+                                        <span class="badge bg-success"><i class="fa-solid fa-check"></i> <?php esc_html_e( 'Attivo', 'vcolonna-ai-assistant' ); ?></span>
                                     <?php elseif ( $vcai_comp['status'] === 'error' ) : ?>
-                                        <span class="badge bg-danger vcai-comp-error" style="cursor:pointer;" data-error="<?php echo esc_attr( $vcai_comp['error_message'] ); ?>"><i class="fa-solid fa-xmark"></i> <?php esc_html_e( 'Errore', 'vc-colonna-ai-assistant' ); ?></span>
+                                        <span class="badge bg-danger vcai-comp-error" style="cursor:pointer;" data-error="<?php echo esc_attr( $vcai_comp['error_message'] ); ?>"><i class="fa-solid fa-xmark"></i> <?php esc_html_e( 'Errore', 'vcolonna-ai-assistant' ); ?></span>
                                     <?php else : ?>
-                                        <span class="badge bg-secondary"><i class="fa-solid fa-pause"></i> <?php esc_html_e( 'Disattivato', 'vc-colonna-ai-assistant' ); ?></span>
+                                        <span class="badge bg-secondary"><i class="fa-solid fa-pause"></i> <?php esc_html_e( 'Disattivato', 'vcolonna-ai-assistant' ); ?></span>
                                     <?php endif; ?>
                                 </td>
                                 <td><?php echo esc_html( $vcai_comp['created_at'] ); ?></td>
@@ -87,7 +87,7 @@
 
         <p class="text-muted small mt-3">
             <i class="fa-solid fa-circle-info"></i>
-            <?php esc_html_e( 'URL di emergenza per disattivare tutti i componenti:', 'vc-colonna-ai-assistant' ); ?>
+            <?php esc_html_e( 'URL di emergenza per disattivare tutti i componenti:', 'vcolonna-ai-assistant' ); ?>
             <code><?php echo esc_url( home_url( '/?vcai_safe_mode=1' ) ); ?></code>
         </p>
     <?php endif; ?>
