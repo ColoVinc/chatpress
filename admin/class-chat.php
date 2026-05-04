@@ -49,10 +49,10 @@ class Vcai_Chat {
      */
     public function ajax_chat() {
         check_ajax_referer( 'vcai_nonce', 'nonce' );
-        if ( ! current_user_can( 'edit_posts' ) ) wp_send_json_error( __( 'Permessi insufficienti.', 'vc-colonna-ai-assistant' ) );
+        if ( ! current_user_can( 'edit_posts' ) ) wp_send_json_error( __( 'Permessi insufficienti.', 'vcolonna-ai-assistant' ) );
 
         $message = sanitize_textarea_field( wp_unslash( $_POST['message'] ?? '' ) );
-        if ( empty( $message ) ) wp_send_json_error( __( 'Messaggio vuoto.', 'vc-colonna-ai-assistant' ) );
+        if ( empty( $message ) ) wp_send_json_error( __( 'Messaggio vuoto.', 'vcolonna-ai-assistant' ) );
 
         $user_id         = get_current_user_id();
         $conversation_id = intval( $_POST['conversation_id'] ?? 0 );
@@ -70,9 +70,9 @@ class Vcai_Chat {
         }
 
         $connector = Vcai_Admin::get_connector();
-        if ( ! $connector ) wp_send_json_error( __( 'API key non configurata. Vai in VColonna AI → Impostazioni.', 'vc-colonna-ai-assistant' ) );
+        if ( ! $connector ) wp_send_json_error( __( 'API key non configurata. Vai in VColonna AI → Impostazioni.', 'vcolonna-ai-assistant' ) );
 
-        if ( Vcai_Admin::is_rate_limited() ) wp_send_json_error( __( 'Hai raggiunto il limite di richieste orarie. Riprova più tardi.', 'vc-colonna-ai-assistant' ) );
+        if ( Vcai_Admin::is_rate_limited() ) wp_send_json_error( __( 'Hai raggiunto il limite di richieste orarie. Riprova più tardi.', 'vcolonna-ai-assistant' ) );
 
         $response = $connector->generate_with_tools( $clean_history, $message );
         if ( ! $response['success'] ) wp_send_json_error( $response['error'] );
@@ -102,13 +102,13 @@ class Vcai_Chat {
     public function ajax_chat_stream() {
         check_ajax_referer( 'vcai_nonce', 'nonce' );
         if ( ! current_user_can( 'edit_posts' ) ) {
-            $this->sse_error( __( 'Permessi insufficienti.', 'vc-colonna-ai-assistant' ) );
+            $this->sse_error( __( 'Permessi insufficienti.', 'vcolonna-ai-assistant' ) );
             return;
         }
 
         $message = sanitize_textarea_field( wp_unslash( $_GET['message'] ?? '' ) );
         if ( empty( $message ) ) {
-            $this->sse_error( __( 'Messaggio vuoto.', 'vc-colonna-ai-assistant' ) );
+            $this->sse_error( __( 'Messaggio vuoto.', 'vcolonna-ai-assistant' ) );
             return;
         }
 
@@ -128,12 +128,12 @@ class Vcai_Chat {
 
         $connector = Vcai_Admin::get_connector();
         if ( ! $connector ) {
-            $this->sse_error( __( 'API key non configurata.', 'vc-colonna-ai-assistant' ) );
+            $this->sse_error( __( 'API key non configurata.', 'vcolonna-ai-assistant' ) );
             return;
         }
 
         if ( Vcai_Admin::is_rate_limited() ) {
-            $this->sse_error( __( 'Limite richieste orarie raggiunto.', 'vc-colonna-ai-assistant' ) );
+            $this->sse_error( __( 'Limite richieste orarie raggiunto.', 'vcolonna-ai-assistant' ) );
             return;
         }
 
