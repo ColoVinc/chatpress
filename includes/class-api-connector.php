@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Classe base per tutti i connettori API
  * Ogni provider (Gemini, OpenAI, Claude) estende questa classe
  */
-abstract class Jeenie_API_Connector {
+abstract class Vcai_API_Connector {
 
     protected $api_key;
     protected $timeout = 30;
@@ -13,7 +13,7 @@ abstract class Jeenie_API_Connector {
 
     public function __construct( $api_key ) {
         $this->api_key = $api_key;
-        $this->timeout = (int) get_option( 'jeenie_api_timeout', 30 ) ?: 30;
+        $this->timeout = (int) get_option( 'vcai_api_timeout', 30 ) ?: 30;
     }
 
     /**
@@ -156,12 +156,12 @@ abstract class Jeenie_API_Connector {
         // Mappa codici HTTP a messaggi utente
         $user_message = $message;
         switch ( $code ) {
-            case 401: $user_message = __( 'API key non valida. Controlla la chiave nelle impostazioni di Jeenie.', 'jeenie' ); break;
-            case 403: $user_message = __( 'Accesso negato dall\'API. Verifica i permessi della tua API key.', 'jeenie' ); break;
-            case 429: $user_message = __( 'Quota API esaurita o troppe richieste. Riprova tra qualche minuto.', 'jeenie' ); break;
+            case 401: $user_message = __( 'API key non valida. Controlla la chiave nelle impostazioni di VColonna AI.', 'vc-colonna-ai-assistant' ); break;
+            case 403: $user_message = __( 'Accesso negato dall\'API. Verifica i permessi della tua API key.', 'vc-colonna-ai-assistant' ); break;
+            case 429: $user_message = __( 'Quota API esaurita o troppe richieste. Riprova tra qualche minuto.', 'vc-colonna-ai-assistant' ); break;
             case 500:
             case 502:
-            case 503: $user_message = __( 'Il servizio AI è temporaneamente non disponibile. Riprova tra poco.', 'jeenie' ); break;
+            case 503: $user_message = __( 'Il servizio AI è temporaneamente non disponibile. Riprova tra poco.', 'vc-colonna-ai-assistant' ); break;
         }
 
         return [
