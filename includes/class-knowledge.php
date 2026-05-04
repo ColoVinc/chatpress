@@ -2,16 +2,16 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Jeenie_Knowledge — gestisce la knowledge base (documenti + chunking + ricerca)
+ * Vcai_Knowledge — gestisce la knowledge base (documenti + chunking + ricerca)
  */
-class Jeenie_Knowledge {
+class Vcai_Knowledge {
 
     /**
      * Salva un documento: lo spezza in chunk e li inserisce nel DB.
      */
     public static function add_document( string $name, string $content ): int {
         global $wpdb;
-        $table = $wpdb->prefix . 'jeenie_knowledge';
+        $table = $wpdb->prefix . 'vcai_knowledge';
 
         // Rimuovi eventuale documento con lo stesso nome
         self::delete_document( $name );
@@ -39,7 +39,7 @@ class Jeenie_Knowledge {
     public static function delete_document( string $name ): void {
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table
-        $wpdb->delete( $wpdb->prefix . 'jeenie_knowledge', [ 'doc_name' => $name ], [ '%s' ] );
+        $wpdb->delete( $wpdb->prefix . 'vcai_knowledge', [ 'doc_name' => $name ], [ '%s' ] );
     }
 
     /**
@@ -50,7 +50,7 @@ class Jeenie_Knowledge {
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- custom table
         return $wpdb->get_results(
             "SELECT doc_name, COUNT(*) as chunks, MIN(created_at) as created_at
-             FROM {$wpdb->prefix}jeenie_knowledge
+             FROM {$wpdb->prefix}vcai_knowledge
              GROUP BY doc_name
              ORDER BY created_at DESC",
             ARRAY_A
@@ -65,7 +65,7 @@ class Jeenie_Knowledge {
         global $wpdb;
 
         // Prova FULLTEXT
-        $results = $wpdb->get_results( $wpdb->prepare( "SELECT content, MATCH(content) AGAINST(%s IN NATURAL LANGUAGE MODE) AS score FROM " . $wpdb->prefix . "jeenie_knowledge WHERE MATCH(content) AGAINST(%s IN NATURAL LANGUAGE MODE) ORDER BY score DESC LIMIT 5", $query, $query ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+        $results = $wpdb->get_results( $wpdb->prepare( "SELECT content, MATCH(content) AGAINST(%s IN NATURAL LANGUAGE MODE) AS score FROM " . $wpdb->prefix . "vcai_knowledge WHERE MATCH(content) AGAINST(%s IN NATURAL LANGUAGE MODE) ORDER BY score DESC LIMIT 5", $query, $query ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
         // Fallback LIKE se FULLTEXT non trova nulla
         if ( empty( $results ) ) {
@@ -80,7 +80,7 @@ class Jeenie_Knowledge {
             }
 
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table, dynamic LIKE
-            $results = $wpdb->get_results( $wpdb->prepare( "SELECT content FROM " . $wpdb->prefix . "jeenie_knowledge WHERE " . implode( ' OR ', $like_clauses ) . " LIMIT 5", ...$like_values ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $like_clauses contains only hardcoded 'content LIKE %s' strings
+            $results = $wpdb->get_results( $wpdb->prepare( "SELECT content FROM " . $wpdb->prefix . "vcai_knowledge WHERE " . implode( ' OR ', $like_clauses ) . " LIMIT 5", ...$like_values ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $like_clauses contains only hardcoded 'content LIKE %s' strings
         }
 
         if ( empty( $results ) ) return '';
@@ -120,7 +120,7 @@ class Jeenie_Knowledge {
     public static function index_all_posts(): int {
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- custom table
-        $wpdb->query( "DELETE FROM {$wpdb->prefix}jeenie_knowledge WHERE doc_name LIKE 'post:%'" );
+        $wpdb->query( "DELETE FROM {$wpdb->prefix}vcai_knowledge WHERE doc_name LIKE 'post:%'" );
 
         $posts = get_posts( [
             'post_type'      => array_merge( [ 'post', 'page' ], array_keys( get_post_types( [ '_builtin' => false, 'public' => true ] ) ) ),
@@ -148,7 +148,7 @@ class Jeenie_Knowledge {
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- custom table
         return (int) $wpdb->get_var(
-            "SELECT COUNT(DISTINCT doc_name) FROM {$wpdb->prefix}jeenie_knowledge WHERE doc_name LIKE 'post:%'"
+            "SELECT COUNT(DISTINCT doc_name) FROM {$wpdb->prefix}vcai_knowledge WHERE doc_name LIKE 'post:%'"
         );
     }
 
