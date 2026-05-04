@@ -2,24 +2,24 @@ jQuery(function ($) {
 
     // Toggle sezioni provider
     function toggleProvider() {
-        var provider = $('#jeenie-provider-select').val();
-        $('.jeenie-provider-section').hide();
-        $('#jeenie-provider-' + provider).show();
+        var provider = $('#vcai-provider-select').val();
+        $('.vcai-provider-section').hide();
+        $('#vcai-provider-' + provider).show();
     }
-    $('#jeenie-provider-select').on('change', toggleProvider);
+    $('#vcai-provider-select').on('change', toggleProvider);
     toggleProvider();
 
     // Test connessione API
-    $('#jeenie-test-api').on('click', function () {
+    $('#vcai-test-api').on('click', function () {
         const $btn    = $(this);
-        const $result = $('#jeenie-test-result');
+        const $result = $('#vcai-test-result');
 
         $btn.prop('disabled', true).text('⏳ Test in corso...');
         $result.removeClass('success error').text('');
 
-        $.post(jeenie.ajax_url, {
-            action: 'jeenie_test_api',
-            nonce:  jeenie.nonce,
+        $.post(vcai.ajax_url, {
+            action: 'vcai_test_api',
+            nonce:  vcai.nonce,
         })
         .done(function (res) {
             if (res.success) {
@@ -37,15 +37,15 @@ jQuery(function ($) {
     });
 
     // Svuota log
-    $('#jeenie-clear-logs').on('click', function () {
+    $('#vcai-clear-logs').on('click', function () {
         if ( ! confirm( 'Sei sicuro di voler svuotare tutti i log? L\'operazione non è reversibile.' ) ) return;
 
         const $btn = $(this);
         $btn.prop('disabled', true).text('⏳ Svuotamento...');
 
-        $.post(jeenie.ajax_url, {
-            action: 'jeenie_clear_logs',
-            nonce:  jeenie.nonce,
+        $.post(vcai.ajax_url, {
+            action: 'vcai_clear_logs',
+            nonce:  vcai.nonce,
         })
         .done(function (res) {
             if (res.success) {
@@ -65,11 +65,11 @@ jQuery(function ($) {
     // ── Componenti ────────────────────────────────────────────
 
     // Toggle stato componente
-    $(document).on('click', '.jeenie-comp-toggle', function () {
+    $(document).on('click', '.vcai-comp-toggle', function () {
         var $btn = $(this);
-        $.post(jeenie.ajax_url, {
-            action: 'jeenie_toggle_component',
-            nonce: jeenie.nonce,
+        $.post(vcai.ajax_url, {
+            action: 'vcai_toggle_component',
+            nonce: vcai.nonce,
             slug: $btn.data('slug'),
             status: $btn.data('status'),
         }).done(function (res) {
@@ -79,11 +79,11 @@ jQuery(function ($) {
     });
 
     // Elimina componente
-    $(document).on('click', '.jeenie-comp-delete', function () {
+    $(document).on('click', '.vcai-comp-delete', function () {
         if (!confirm('Eliminare questo componente? I file verranno rimossi.')) return;
-        $.post(jeenie.ajax_url, {
-            action: 'jeenie_delete_component',
-            nonce: jeenie.nonce,
+        $.post(vcai.ajax_url, {
+            action: 'vcai_delete_component',
+            nonce: vcai.nonce,
             slug: $(this).data('slug'),
         }).done(function (res) {
             if (res.success) location.reload();
@@ -92,24 +92,24 @@ jQuery(function ($) {
     });
 
     // Disattiva tutti
-    $('#jeenie-deactivate-all').on('click', function () {
+    $('#vcai-deactivate-all').on('click', function () {
         if (!confirm('Disattivare tutti i componenti?')) return;
-        $.post(jeenie.ajax_url, {
-            action: 'jeenie_toggle_component',
-            nonce: jeenie.nonce,
+        $.post(vcai.ajax_url, {
+            action: 'vcai_toggle_component',
+            nonce: vcai.nonce,
             slug: '__all__',
             status: 'inactive',
         }).done(function () { location.reload(); });
     });
 
     // Mostra errore componente
-    $(document).on('click', '.jeenie-comp-error', function () {
+    $(document).on('click', '.vcai-comp-error', function () {
         var msg = $(this).data('error') || 'Errore sconosciuto';
         alert('Errore componente:\n\n' + msg);
     });
 
     // Mostra dettaglio errore nei log
-    $(document).on('click', '.jeenie-log-error', function () {
+    $(document).on('click', '.vcai-log-error', function () {
         var msg = $(this).data('error') || 'Errore sconosciuto';
         var $modal = $('<div style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999999;display:flex;align-items:center;justify-content:center;">'
             + '<div style="background:#fff;border-radius:8px;padding:24px;max-width:500px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.2);">'
@@ -125,55 +125,55 @@ jQuery(function ($) {
     // ── Knowledge Base ───────────────────────────────────────────
 
     // Carica file .txt nel textarea
-    $('#jeenie-kb-file').on('change', function () {
+    $('#vcai-kb-file').on('change', function () {
         var file = this.files[0];
         if (!file) return;
         var reader = new FileReader();
         reader.onload = function (e) {
-            $('#jeenie-kb-content').val(e.target.result);
-            if (!$('#jeenie-kb-name').val()) {
-                $('#jeenie-kb-name').val(file.name.replace(/\.txt$/i, ''));
+            $('#vcai-kb-content').val(e.target.result);
+            if (!$('#vcai-kb-name').val()) {
+                $('#vcai-kb-name').val(file.name.replace(/\.txt$/i, ''));
             }
         };
         reader.readAsText(file);
     });
 
     // Upload documento
-    $('#jeenie-kb-upload').on('click', function () {
-        var name    = $('#jeenie-kb-name').val().trim();
-        var content = $('#jeenie-kb-content').val().trim();
-        if (!name || !content) { $('#jeenie-kb-result').show().text('⚠️ Nome e contenuto obbligatori.'); return; }
+    $('#vcai-kb-upload').on('click', function () {
+        var name    = $('#vcai-kb-name').val().trim();
+        var content = $('#vcai-kb-content').val().trim();
+        if (!name || !content) { $('#vcai-kb-result').show().text('⚠️ Nome e contenuto obbligatori.'); return; }
 
         var $btn = $(this);
         $btn.prop('disabled', true).text('⏳ Salvataggio...');
 
-        $.post(jeenie.ajax_url, {
-            action: 'jeenie_upload_knowledge',
-            nonce: jeenie.nonce,
+        $.post(vcai.ajax_url, {
+            action: 'vcai_upload_knowledge',
+            nonce: vcai.nonce,
             doc_name: name,
             doc_content: content,
         }).done(function (res) {
             if (res.success) {
-                $('#jeenie-kb-result').show().css('color', '#00a32a').text('✅ ' + res.data.message);
+                $('#vcai-kb-result').show().css('color', '#00a32a').text('✅ ' + res.data.message);
                 setTimeout(function () { location.reload(); }, 1000);
             } else {
-                $('#jeenie-kb-result').show().css('color', '#d63638').text('❌ ' + res.data);
+                $('#vcai-kb-result').show().css('color', '#d63638').text('❌ ' + res.data);
             }
         }).fail(function () {
-            $('#jeenie-kb-result').show().css('color', '#d63638').text('❌ Errore di connessione.');
+            $('#vcai-kb-result').show().css('color', '#d63638').text('❌ Errore di connessione.');
         }).always(function () {
             $btn.prop('disabled', false).html('<i class="fa-solid fa-plus"></i> Salva Documento');
         });
     });
 
     // Elimina documento
-    $(document).on('click', '.jeenie-kb-delete', function () {
+    $(document).on('click', '.vcai-kb-delete', function () {
         var name = $(this).data('name');
         if (!confirm('Eliminare il documento "' + name + '"?')) return;
 
-        $.post(jeenie.ajax_url, {
-            action: 'jeenie_delete_knowledge',
-            nonce: jeenie.nonce,
+        $.post(vcai.ajax_url, {
+            action: 'vcai_delete_knowledge',
+            nonce: vcai.nonce,
             doc_name: name,
         }).done(function (res) {
             if (res.success) location.reload();
@@ -182,22 +182,22 @@ jQuery(function ($) {
     });
 
     // Indicizza tutti i post (RAG)
-    $('#jeenie-index-posts').on('click', function () {
+    $('#vcai-index-posts').on('click', function () {
         var $btn = $(this);
         $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Indicizzazione...');
 
-        $.post(jeenie.ajax_url, {
-            action: 'jeenie_index_posts',
-            nonce: jeenie.nonce,
+        $.post(vcai.ajax_url, {
+            action: 'vcai_index_posts',
+            nonce: vcai.nonce,
         }).done(function (res) {
             if (res.success) {
-                $('#jeenie-index-result').show().css('color', '#00a32a').text('✅ ' + res.data.message);
+                $('#vcai-index-result').show().css('color', '#00a32a').text('✅ ' + res.data.message);
                 setTimeout(function () { location.reload(); }, 1500);
             } else {
-                $('#jeenie-index-result').show().css('color', '#d63638').text('❌ ' + res.data);
+                $('#vcai-index-result').show().css('color', '#d63638').text('❌ ' + res.data);
             }
         }).fail(function () {
-            $('#jeenie-index-result').show().css('color', '#d63638').text('❌ Errore di connessione.');
+            $('#vcai-index-result').show().css('color', '#d63638').text('❌ Errore di connessione.');
         }).always(function () {
             $btn.prop('disabled', false).html('<i class="fa-solid fa-arrows-rotate"></i> Indicizza tutti i post');
         });
