@@ -3,7 +3,7 @@
 - 1 classe = 1 widget
 - Tutti i widget estendono la classe `\Elementor\Widget_Base`
 - Il prefisso "sg" va usato nel nome del widget, nelle classi e nelle funzioni custom
-- La categoria del widget deve essere 'jeenie-components'
+- La categoria del widget deve essere 'vcai-components'
 
 L'architettura di un widget Elementor ha la seguente struttura:
 ```plaintext
@@ -27,7 +27,7 @@ Un widget Elementor è composto da:
 - `get_name()` — Restituisce lo slug univoco del widget (es. 'sg_hero_section')
 - `get_title()` — Restituisce il nome visualizzato nel pannello (es. 'SG Hero Section')
 - `get_icon()` — Restituisce l'icona del widget (es. 'eicon-banner')
-- `get_categories()` — Restituisce le categorie (usare `['jeenie-components']`)
+- `get_categories()` — Restituisce le categorie (usare `['vcai-components']`)
 - `register_controls()` — Registra i controlli (campi) del widget
 - `render()` — Genera l'HTML del frontend
 
@@ -50,13 +50,13 @@ function sg_hero_section_register_widget( $widgets_manager ) {
 add_action( 'elementor/widgets/register', 'sg_hero_section_register_widget' );
 
 /**
- * Registra la categoria custom 'jeenie-components' se non esiste
+ * Registra la categoria custom 'vcai-components' se non esiste
  */
 function sg_hero_section_register_category( $elements_manager ) {
     $elements_manager->add_category(
-        'jeenie-components',
+        'vcai-components',
         [
-            'title' => 'Jeenie Components',
+            'title' => 'VColonna AI Components',
             'icon'  => 'fa fa-puzzle-piece',
         ]
     );
@@ -86,7 +86,7 @@ class Sg_Hero_Section_Widget extends \Elementor\Widget_Base {
     }
 
     public function get_title(): string {
-        return esc_html__( 'SG Hero Section', 'jeenie' );
+        return esc_html__( 'SG Hero Section', 'vcai' );
     }
 
     public function get_icon(): string {
@@ -94,11 +94,11 @@ class Sg_Hero_Section_Widget extends \Elementor\Widget_Base {
     }
 
     public function get_categories(): array {
-        return [ 'jeenie-components' ];
+        return [ 'vcai-components' ];
     }
 
     public function get_keywords(): array {
-        return [ 'hero', 'banner', 'header', 'jeenie' ];
+        return [ 'hero', 'banner', 'header', 'vcai' ];
     }
 
     /**
@@ -111,7 +111,7 @@ class Sg_Hero_Section_Widget extends \Elementor\Widget_Base {
         $this->start_controls_section(
             'sg_content_section',
             [
-                'label' => esc_html__( 'Contenuto', 'jeenie' ),
+                'label' => esc_html__( 'Contenuto', 'vcai' ),
                 'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
             ]
         );
@@ -120,9 +120,9 @@ class Sg_Hero_Section_Widget extends \Elementor\Widget_Base {
         $this->add_control(
             'sg_title',
             [
-                'label'       => esc_html__( 'Titolo', 'jeenie' ),
+                'label'       => esc_html__( 'Titolo', 'vcai' ),
                 'type'        => \Elementor\Controls_Manager::TEXT,
-                'default'     => esc_html__( 'Benvenuto nel nostro sito', 'jeenie' ),
+                'default'     => esc_html__( 'Benvenuto nel nostro sito', 'vcai' ),
                 'label_block' => true,
             ]
         );
@@ -131,9 +131,9 @@ class Sg_Hero_Section_Widget extends \Elementor\Widget_Base {
         $this->add_control(
             'sg_subtitle',
             [
-                'label'       => esc_html__( 'Sottotitolo', 'jeenie' ),
+                'label'       => esc_html__( 'Sottotitolo', 'vcai' ),
                 'type'        => \Elementor\Controls_Manager::TEXTAREA,
-                'default'     => esc_html__( 'Scopri i nostri servizi e prodotti', 'jeenie' ),
+                'default'     => esc_html__( 'Scopri i nostri servizi e prodotti', 'vcai' ),
             ]
         );
 
@@ -141,7 +141,7 @@ class Sg_Hero_Section_Widget extends \Elementor\Widget_Base {
         $this->add_control(
             'sg_background_image',
             [
-                'label'   => esc_html__( 'Immagine di sfondo', 'jeenie' ),
+                'label'   => esc_html__( 'Immagine di sfondo', 'vcai' ),
                 'type'    => \Elementor\Controls_Manager::MEDIA,
                 'default' => [
                     'url' => \Elementor\Utils::get_placeholder_image_src(),
@@ -153,7 +153,7 @@ class Sg_Hero_Section_Widget extends \Elementor\Widget_Base {
         $this->add_control(
             'sg_button_link',
             [
-                'label'       => esc_html__( 'Link bottone', 'jeenie' ),
+                'label'       => esc_html__( 'Link bottone', 'vcai' ),
                 'type'        => \Elementor\Controls_Manager::URL,
                 'default'     => [
                     'url'         => '#',
@@ -167,9 +167,9 @@ class Sg_Hero_Section_Widget extends \Elementor\Widget_Base {
         $this->add_control(
             'sg_button_text',
             [
-                'label'   => esc_html__( 'Testo bottone', 'jeenie' ),
+                'label'   => esc_html__( 'Testo bottone', 'vcai' ),
                 'type'    => \Elementor\Controls_Manager::TEXT,
-                'default' => esc_html__( 'Scopri di più', 'jeenie' ),
+                'default' => esc_html__( 'Scopri di più', 'vcai' ),
             ]
         );
 
@@ -177,19 +177,19 @@ class Sg_Hero_Section_Widget extends \Elementor\Widget_Base {
         $this->add_control(
             'sg_text_align',
             [
-                'label'   => esc_html__( 'Allineamento testo', 'jeenie' ),
+                'label'   => esc_html__( 'Allineamento testo', 'vcai' ),
                 'type'    => \Elementor\Controls_Manager::CHOOSE,
                 'options' => [
                     'left'   => [
-                        'title' => esc_html__( 'Sinistra', 'jeenie' ),
+                        'title' => esc_html__( 'Sinistra', 'vcai' ),
                         'icon'  => 'eicon-text-align-left',
                     ],
                     'center' => [
-                        'title' => esc_html__( 'Centro', 'jeenie' ),
+                        'title' => esc_html__( 'Centro', 'vcai' ),
                         'icon'  => 'eicon-text-align-center',
                     ],
                     'right'  => [
-                        'title' => esc_html__( 'Destra', 'jeenie' ),
+                        'title' => esc_html__( 'Destra', 'vcai' ),
                         'icon'  => 'eicon-text-align-right',
                     ],
                 ],
@@ -207,7 +207,7 @@ class Sg_Hero_Section_Widget extends \Elementor\Widget_Base {
         $this->start_controls_section(
             'sg_style_section',
             [
-                'label' => esc_html__( 'Stile', 'jeenie' ),
+                'label' => esc_html__( 'Stile', 'vcai' ),
                 'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
             ]
         );
@@ -216,7 +216,7 @@ class Sg_Hero_Section_Widget extends \Elementor\Widget_Base {
         $this->add_control(
             'sg_title_color',
             [
-                'label'     => esc_html__( 'Colore titolo', 'jeenie' ),
+                'label'     => esc_html__( 'Colore titolo', 'vcai' ),
                 'type'      => \Elementor\Controls_Manager::COLOR,
                 'default'   => '#ffffff',
                 'selectors' => [
@@ -238,7 +238,7 @@ class Sg_Hero_Section_Widget extends \Elementor\Widget_Base {
         $this->add_control(
             'sg_min_height',
             [
-                'label'      => esc_html__( 'Altezza minima', 'jeenie' ),
+                'label'      => esc_html__( 'Altezza minima', 'vcai' ),
                 'type'       => \Elementor\Controls_Manager::SLIDER,
                 'size_units' => [ 'px', 'vh' ],
                 'range'      => [
@@ -256,7 +256,7 @@ class Sg_Hero_Section_Widget extends \Elementor\Widget_Base {
         $this->add_control(
             'sg_overlay_color',
             [
-                'label'     => esc_html__( 'Colore overlay', 'jeenie' ),
+                'label'     => esc_html__( 'Colore overlay', 'vcai' ),
                 'type'      => \Elementor\Controls_Manager::COLOR,
                 'default'   => 'rgba(0,0,0,0.5)',
                 'selectors' => [
@@ -343,9 +343,9 @@ $repeater = new \Elementor\Repeater();
 $repeater->add_control(
     'sg_item_title',
     [
-        'label'       => esc_html__( 'Titolo', 'jeenie' ),
+        'label'       => esc_html__( 'Titolo', 'vcai' ),
         'type'        => \Elementor\Controls_Manager::TEXT,
-        'default'     => esc_html__( 'Elemento', 'jeenie' ),
+        'default'     => esc_html__( 'Elemento', 'vcai' ),
         'label_block' => true,
     ]
 );
@@ -353,7 +353,7 @@ $repeater->add_control(
 $repeater->add_control(
     'sg_item_icon',
     [
-        'label'   => esc_html__( 'Icona', 'jeenie' ),
+        'label'   => esc_html__( 'Icona', 'vcai' ),
         'type'    => \Elementor\Controls_Manager::ICONS,
         'default' => [
             'value'   => 'fas fa-star',
@@ -365,13 +365,13 @@ $repeater->add_control(
 $this->add_control(
     'sg_items_list',
     [
-        'label'       => esc_html__( 'Elementi', 'jeenie' ),
+        'label'       => esc_html__( 'Elementi', 'vcai' ),
         'type'        => \Elementor\Controls_Manager::REPEATER,
         'fields'      => $repeater->get_controls(),
         'default'     => [
-            [ 'sg_item_title' => esc_html__( 'Elemento 1', 'jeenie' ) ],
-            [ 'sg_item_title' => esc_html__( 'Elemento 2', 'jeenie' ) ],
-            [ 'sg_item_title' => esc_html__( 'Elemento 3', 'jeenie' ) ],
+            [ 'sg_item_title' => esc_html__( 'Elemento 1', 'vcai' ) ],
+            [ 'sg_item_title' => esc_html__( 'Elemento 2', 'vcai' ) ],
+            [ 'sg_item_title' => esc_html__( 'Elemento 3', 'vcai' ) ],
         ],
         'title_field' => '{{{ sg_item_title }}}',
     ]
