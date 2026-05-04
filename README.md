@@ -1,6 +1,6 @@
-# 🤖 Jeenie — AI Assistant for WordPress
+# 🤖 VColonna AI — AI Assistant for WordPress
 
-Jeenie integrates artificial intelligence directly into the WordPress admin panel. It's not just a chatbot: it can perform **real actions** on your site through agentic function calling.
+VColonna AI integrates artificial intelligence directly into the WordPress admin panel. It's not just a chatbot: it can perform **real actions** on your site through agentic function calling.
 
 ![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-blue?logo=wordpress)
 ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777BB4?logo=php)
@@ -30,14 +30,14 @@ Jeenie integrates artificial intelligence directly into the WordPress admin pane
 
 ## 🧩 Component Generator
 
-Jeenie can generate custom widgets/modules for your page builder directly from the chat:
+VColonna AI can generate custom widgets/modules for your page builder directly from the chat:
 
 1. Ask the AI to create a component (e.g. "Create a hero section with title and background image for WPBakery")
 2. The AI generates the PHP, CSS and JS code following the editor's documentation
-3. The component is saved in `components/` and appears in **Jeenie → Components**
+3. The component is saved in `components/` and appears in **VColonna AI → Components**
 4. The component is automatically available in your page builder's widget panel
 5. If a component causes an error, it's automatically deactivated (sandbox protection)
-6. Emergency URL: `yoursite.com/?jeenie_safe_mode=1` deactivates all components
+6. Emergency URL: `yoursite.com/?vcai_safe_mode=1` deactivates all components
 
 Supported editors: **WPBakery**, **Elementor** (more coming soon)
 
@@ -95,7 +95,7 @@ Clone or download this repository into your WordPress plugins directory:
 
 ```bash
 cd wp-content/plugins/
-git clone https://github.com/ColoVinc/jeenie.git
+git clone https://github.com/ColoVinc/vcai.git
 ```
 
 ### 2. Install vendor dependencies
@@ -140,7 +140,7 @@ assets/vendor/
 ### 3. Activate and configure
 
 1. Activate the plugin from **Plugins** in WordPress admin
-2. Go to **Jeenie → Settings**
+2. Go to **VColonna AI → Settings**
 3. Select your AI provider and enter the API key
 4. Optionally configure the site context (name, sector, tone, target audience)
 5. Click the 🤖 robot icon in the bottom-right corner to start chatting
@@ -148,8 +148,8 @@ assets/vendor/
 ## 🏗️ Project Structure
 
 ```
-jeenie/
-├── jeenie.php                  # Main plugin file, bootstrap, DB tables
+vcai/
+├── vcai.php                  # Main plugin file, bootstrap, DB tables
 ├── includes/
 │   ├── class-core.php             # Core singleton, hooks, auto-reindex on save
 │   ├── class-api-connector.php    # Abstract base class for AI providers
@@ -195,11 +195,11 @@ The plugin creates 5 custom tables on activation:
 
 | Table | Purpose |
 |-------|---------|
-| `wp_jeenie_conversations` | Chat conversations per user |
-| `wp_jeenie_messages` | Individual messages (role: user/model) |
-| `wp_jeenie_logs` | API call logs with token counts |
-| `wp_jeenie_knowledge` | Knowledge base chunks with FULLTEXT index |
-| `wp_jeenie_components` | Component metadata (slug, name, editor, status) |
+| `wp_vcai_conversations` | Chat conversations per user |
+| `wp_vcai_messages` | Individual messages (role: user/model) |
+| `wp_vcai_logs` | API call logs with token counts |
+| `wp_vcai_knowledge` | Knowledge base chunks with FULLTEXT index |
+| `wp_vcai_components` | Component metadata (slug, name, editor, status) |
 
 All tables are automatically removed when the plugin is deleted (not deactivated).
 
