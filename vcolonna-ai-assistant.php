@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name: Jeenie – AI Assistant
- * Plugin URI:  https://github.com/ColoVinc/jeenie
+ * Plugin Name: VColonna AI Assistant
+ * Plugin URI:  https://github.com/ColoVinc/vcolonna-ai-assistant
  * Description: AI Assistant — Agentic chat, content generation, ACF/CPT support with Gemini, OpenAI, Claude and Groq.
  * Version:     0.1.0
  * Author:      Vincenzo Colonna
  * Author URI:  https://github.com/ColoVinc
  * License:     GPL-2.0+
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: jeenie
+ * Text Domain: vcolonna-ai-assistant
  * Domain Path: /languages
  * Requires at least: 5.8
  * Requires PHP: 7.4
@@ -20,31 +20,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Costanti del plugin
-define( 'JEENIE_VERSION', '0.4.0' );
-define( 'JEENIE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'JEENIE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'JEENIE_PLUGIN_FILE', __FILE__ );
+define( 'VCAI_VERSION', '0.4.0' );
+define( 'VCAI_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'VCAI_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'VCAI_PLUGIN_FILE', __FILE__ );
 
 // Autoload delle classi
 spl_autoload_register( function( $class ) {
-    $prefix = 'Jeenie_';
+    $prefix = 'Vcai_';
     if ( strpos( $class, $prefix ) !== 0 ) return;
 
     $map = [
-        'Jeenie_Core'          => JEENIE_PLUGIN_DIR . 'includes/class-core.php',
-        'Jeenie_API_Connector' => JEENIE_PLUGIN_DIR . 'includes/class-api-connector.php',
-        'Jeenie_Gemini'        => JEENIE_PLUGIN_DIR . 'includes/connectors/class-gemini.php',
-        'Jeenie_OpenAI'        => JEENIE_PLUGIN_DIR . 'includes/connectors/class-openai.php',
-        'Jeenie_Claude'        => JEENIE_PLUGIN_DIR . 'includes/connectors/class-claude.php',
-        'Jeenie_Groq'          => JEENIE_PLUGIN_DIR . 'includes/connectors/class-groq.php',
-        'Jeenie_Logger'        => JEENIE_PLUGIN_DIR . 'includes/class-logger.php',
-        'Jeenie_History'       => JEENIE_PLUGIN_DIR . 'includes/class-history.php',
-        'Jeenie_Admin'         => JEENIE_PLUGIN_DIR . 'admin/class-admin.php',
-        'Jeenie_Metabox'       => JEENIE_PLUGIN_DIR . 'admin/class-metabox.php',
-        'Jeenie_Chat'          => JEENIE_PLUGIN_DIR . 'admin/class-chat.php',
-        'Jeenie_Tools'         => JEENIE_PLUGIN_DIR . 'includes/class-tools.php',
-        'Jeenie_Knowledge'     => JEENIE_PLUGIN_DIR . 'includes/class-knowledge.php',
-        'Jeenie_Components'    => JEENIE_PLUGIN_DIR . 'includes/class-components.php',
+        'Vcai_Core'          => VCAI_PLUGIN_DIR . 'includes/class-core.php',
+        'Vcai_API_Connector' => VCAI_PLUGIN_DIR . 'includes/class-api-connector.php',
+        'Vcai_Gemini'        => VCAI_PLUGIN_DIR . 'includes/connectors/class-gemini.php',
+        'Vcai_OpenAI'        => VCAI_PLUGIN_DIR . 'includes/connectors/class-openai.php',
+        'Vcai_Claude'        => VCAI_PLUGIN_DIR . 'includes/connectors/class-claude.php',
+        'Vcai_Groq'          => VCAI_PLUGIN_DIR . 'includes/connectors/class-groq.php',
+        'Vcai_Logger'        => VCAI_PLUGIN_DIR . 'includes/class-logger.php',
+        'Vcai_History'       => VCAI_PLUGIN_DIR . 'includes/class-history.php',
+        'Vcai_Admin'         => VCAI_PLUGIN_DIR . 'admin/class-admin.php',
+        'Vcai_Metabox'       => VCAI_PLUGIN_DIR . 'admin/class-metabox.php',
+        'Vcai_Chat'          => VCAI_PLUGIN_DIR . 'admin/class-chat.php',
+        'Vcai_Tools'         => VCAI_PLUGIN_DIR . 'includes/class-tools.php',
+        'Vcai_Knowledge'     => VCAI_PLUGIN_DIR . 'includes/class-knowledge.php',
+        'Vcai_Components'    => VCAI_PLUGIN_DIR . 'includes/class-components.php',
     ];
 
     if ( isset( $map[$class] ) && file_exists( $map[$class] ) ) {
@@ -53,56 +53,56 @@ spl_autoload_register( function( $class ) {
 });
 
 // Avvio del plugin
-function jeenie_init() {
-    Jeenie_Core::get_instance();
+function vcai_init() {
+    Vcai_Core::get_instance();
 }
-add_action( 'plugins_loaded', 'jeenie_init' );
+add_action( 'plugins_loaded', 'vcai_init' );
 
 // Hook attivazione / disattivazione
-register_activation_hook( __FILE__, 'jeenie_activate' );
-register_deactivation_hook( __FILE__, 'jeenie_deactivate' );
+register_activation_hook( __FILE__, 'vcai_activate' );
+register_deactivation_hook( __FILE__, 'vcai_deactivate' );
 
-function jeenie_activate() {
-    set_transient( 'jeenie_activated', true, 60 );
-    jeenie_create_tables();
-    add_option( 'jeenie_version', JEENIE_VERSION );
+function vcai_activate() {
+    set_transient( 'vcai_activated', true, 60 );
+    vcai_create_tables();
+    add_option( 'vcai_version', VCAI_VERSION );
 
-    if ( ! wp_next_scheduled( 'jeenie_daily_cleanup' ) ) {
-        wp_schedule_event( time(), 'daily', 'jeenie_daily_cleanup' );
+    if ( ! wp_next_scheduled( 'vcai_daily_cleanup' ) ) {
+        wp_schedule_event( time(), 'daily', 'vcai_daily_cleanup' );
     }
 }
 
 // Avviato a plugins_loaded per aggiornamenti DB
-function jeenie_check_version() {
-    $installed = get_option( 'jeenie_version', '0' );
-    if ( version_compare( $installed, JEENIE_VERSION, '<' ) ) {
-        jeenie_create_tables();
-        jeenie_preload_docs();
-        update_option( 'jeenie_version', JEENIE_VERSION );
+function vcai_check_version() {
+    $installed = get_option( 'vcai_version', '0' );
+    if ( version_compare( $installed, VCAI_VERSION, '<' ) ) {
+        vcai_create_tables();
+        vcai_preload_docs();
+        update_option( 'vcai_version', VCAI_VERSION );
     }
 }
-add_action( 'plugins_loaded', 'jeenie_check_version', 5 );
+add_action( 'plugins_loaded', 'vcai_check_version', 5 );
 
-function jeenie_preload_docs() {
-    $docs_dir = JEENIE_PLUGIN_DIR . 'docs/';
+function vcai_preload_docs() {
+    $docs_dir = VCAI_PLUGIN_DIR . 'docs/';
     if ( ! is_dir( $docs_dir ) ) return;
 
     foreach ( glob( $docs_dir . '*.md' ) as $file ) {
         $name    = 'doc:' . basename( $file, '.md' );
         $content = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
         if ( $content ) {
-            Jeenie_Knowledge::add_document( $name, $content );
+            Vcai_Knowledge::add_document( $name, $content );
         }
     }
 }
 
-function jeenie_create_tables() {
+function vcai_create_tables() {
     global $wpdb;
     $charset = $wpdb->get_charset_collate();
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
     // Tabella log
-    dbDelta( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}jeenie_logs (
+    dbDelta( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}vcai_logs (
         id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         provider VARCHAR(50) NOT NULL,
@@ -114,7 +114,7 @@ function jeenie_create_tables() {
     ) $charset;" );
 
     // Tabella conversazioni
-    dbDelta( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}jeenie_conversations (
+    dbDelta( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}vcai_conversations (
         id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
         user_id BIGINT(20) UNSIGNED NOT NULL,
         title VARCHAR(100) NOT NULL DEFAULT '',
@@ -125,7 +125,7 @@ function jeenie_create_tables() {
     ) $charset;" );
 
     // Tabella messaggi
-    dbDelta( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}jeenie_messages (
+    dbDelta( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}vcai_messages (
         id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
         conversation_id BIGINT(20) UNSIGNED NOT NULL,
         role VARCHAR(10) NOT NULL,
@@ -136,7 +136,7 @@ function jeenie_create_tables() {
     ) $charset;" );
 
     // Tabella knowledge base
-    dbDelta( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}jeenie_knowledge (
+    dbDelta( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}vcai_knowledge (
         id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
         doc_name VARCHAR(255) NOT NULL,
         chunk_index INT NOT NULL DEFAULT 0,
@@ -148,7 +148,7 @@ function jeenie_create_tables() {
     ) $charset;" );
 
     // Tabella componenti
-    dbDelta( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}jeenie_components (
+    dbDelta( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}vcai_components (
         id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
         slug VARCHAR(100) NOT NULL,
         name VARCHAR(255) NOT NULL,
@@ -161,6 +161,6 @@ function jeenie_create_tables() {
     ) $charset;" );
 }
 
-function jeenie_deactivate() {
-    wp_clear_scheduled_hook( 'jeenie_daily_cleanup' );
+function vcai_deactivate() {
+    wp_clear_scheduled_hook( 'vcai_daily_cleanup' );
 }
