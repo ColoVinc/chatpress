@@ -1,31 +1,31 @@
 jQuery(function ($) {
 
     // Gestione tab
-    $('.jeenie-tab').on('click', function () {
+    $('.vcai-tab').on('click', function () {
         const tab = $(this).data('tab');
-        $('.jeenie-tab').removeClass('active');
-        $('.jeenie-tab-content').removeClass('active');
+        $('.vcai-tab').removeClass('active');
+        $('.vcai-tab-content').removeClass('active');
         $(this).addClass('active');
-        $('#jeenie-tab-' + tab).addClass('active');
+        $('#vcai-tab-' + tab).addClass('active');
     });
 
-    function showLoading()  { $('#jeenie-loading').show(); $('#jeenie-error').hide(); }
-    function hideLoading()  { $('#jeenie-loading').hide(); }
-    function showError(msg) { $('#jeenie-error').text(msg).show(); }
+    function showLoading()  { $('#vcai-loading').show(); $('#vcai-error').hide(); }
+    function hideLoading()  { $('#vcai-loading').hide(); }
+    function showError(msg) { $('#vcai-error').text(msg).show(); }
 
     // GENERA CONTENUTO
-    $('#jeenie-generate-content').on('click', function () {
+    $('#vcai-generate-content').on('click', function () {
         const title    = $('#title').val() || $('input[name="post_title"]').val() || '';
-        const keywords = $('#jeenie-keywords').val();
+        const keywords = $('#vcai-keywords').val();
 
         if (!title) { showError('Inserisci prima il titolo del post.'); return; }
 
         showLoading();
-        $('#jeenie-content-result').hide();
+        $('#vcai-content-result').hide();
 
-        $.post(jeenie.ajax_url, {
-            action:   'jeenie_generate_content',
-            nonce:    jeenie.nonce,
+        $.post(vcai.ajax_url, {
+            action:   'vcai_generate_content',
+            nonce:    vcai.nonce,
             title:    title,
             keywords: keywords,
             type:     $('#post_type').val() || 'post',
@@ -33,8 +33,8 @@ jQuery(function ($) {
         .done(function (res) {
             hideLoading();
             if (res.success) {
-                $('#jeenie-content-result .jeenie-result-text').text(res.data.text);
-                $('#jeenie-content-result').show();
+                $('#vcai-content-result .vcai-result-text').text(res.data.text);
+                $('#vcai-content-result').show();
             } else {
                 showError(res.data);
             }
@@ -43,8 +43,8 @@ jQuery(function ($) {
     });
 
     // COPIA CONTENUTO GENERATO
-    $(document).on('click', '.jeenie-copy-content', function () {
-        var text = $('#jeenie-content-result .jeenie-result-text').text();
+    $(document).on('click', '.vcai-copy-content', function () {
+        var text = $('#vcai-content-result .vcai-result-text').text();
         if (!text) return;
 
         // Copia con fallback per HTTP
@@ -71,8 +71,8 @@ jQuery(function ($) {
     });
 
     // INSERISCI CONTENUTO NELL'EDITOR
-    $(document).on('click', '.jeenie-insert-content', function () {
-        const text = $('#jeenie-content-result .jeenie-result-text').text();
+    $(document).on('click', '.vcai-insert-content', function () {
+        const text = $('#vcai-content-result .vcai-result-text').text();
         if (!text) return;
 
         // Editor classico (TinyMCE) — controlla per primo
@@ -90,18 +90,18 @@ jQuery(function ($) {
     });
 
     // GENERA SEO
-    $('#jeenie-generate-seo').on('click', function () {
+    $('#vcai-generate-seo').on('click', function () {
         const title   = $('#title').val() || '';
         const content = typeof wp !== 'undefined' && wp.data
             ? (wp.data.select('core/block-editor').getBlocks().map(b => b.attributes.content || '').join(' '))
             : (tinyMCE && tinyMCE.activeEditor ? tinyMCE.activeEditor.getContent({ format: 'text' }) : '');
 
         showLoading();
-        $('#jeenie-seo-result').hide();
+        $('#vcai-seo-result').hide();
 
-        $.post(jeenie.ajax_url, {
-            action:  'jeenie_generate_seo',
-            nonce:   jeenie.nonce,
+        $.post(vcai.ajax_url, {
+            action:  'vcai_generate_seo',
+            nonce:   vcai.nonce,
             title:   title,
             content: content.substring(0, 1000),
         })
@@ -109,12 +109,12 @@ jQuery(function ($) {
             hideLoading();
             if (res.success) {
                 const d = res.data;
-                $('#jeenie-meta-title').val(d.meta_title || '');
-                $('#jeenie-meta-description').val(d.meta_description || '');
-                $('#jeenie-excerpt').val(d.excerpt || '');
-                updateCharCount('#jeenie-meta-title', 60);
-                updateCharCount('#jeenie-meta-description', 155);
-                $('#jeenie-seo-result').show();
+                $('#vcai-meta-title').val(d.meta_title || '');
+                $('#vcai-meta-description').val(d.meta_description || '');
+                $('#vcai-excerpt').val(d.excerpt || '');
+                updateCharCount('#vcai-meta-title', 60);
+                updateCharCount('#vcai-meta-description', 155);
+                $('#vcai-seo-result').show();
             } else {
                 showError(res.data);
             }
@@ -126,17 +126,17 @@ jQuery(function ($) {
     function updateCharCount(selector, max) {
         const $el = $(selector);
         const len = $el.val().length;
-        const $count = $el.closest('.jeenie-seo-field').find('.jeenie-char-count');
+        const $count = $el.closest('.vcai-seo-field').find('.vcai-char-count');
         const color = len > max ? '#d63638' : (len > max * 0.85 ? '#dba617' : '#00a32a');
         $count.text(len + '/' + max + ' caratteri').css('color', color);
     }
 
-    $('#jeenie-meta-title').on('input', function () { updateCharCount('#jeenie-meta-title', 60); });
-    $('#jeenie-meta-description').on('input', function () { updateCharCount('#jeenie-meta-description', 155); });
+    $('#vcai-meta-title').on('input', function () { updateCharCount('#vcai-meta-title', 60); });
+    $('#vcai-meta-description').on('input', function () { updateCharCount('#vcai-meta-description', 155); });
 
     // Inserisci excerpt
-    $(document).on('click', '.jeenie-insert-excerpt', function () {
-        const text = $('#jeenie-excerpt').val();
+    $(document).on('click', '.vcai-insert-excerpt', function () {
+        const text = $('#vcai-excerpt').val();
         if (text && $('#excerpt').length) {
             $('#excerpt').val(text);
         }
